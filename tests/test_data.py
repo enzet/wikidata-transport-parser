@@ -84,14 +84,14 @@ lines: dict[str, list[list[str]]] = {
 }
 
 
-def test_data_stations():
+def test_data_stations() -> None:
     for language in sorted(stations.keys()):
         for test in stations[language]:
             parsed = extract_station_name(test[0], language)
             assert parsed == test[1]
 
 
-def test_data_lines():
+def test_data_lines() -> None:
     for language in sorted(lines.keys()):
         for test in lines[language]:
             parsed = extract_line_name(test[0], language)

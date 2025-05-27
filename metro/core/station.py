@@ -81,7 +81,7 @@ class Station(Named):
     def get_save_id(self) -> str:
         return self.id_.replace("/", "___")
 
-    def get_caption(self, language) -> str:
+    def get_caption(self, language: str) -> str:
         text: str = "unknown"
         if self.id_:
             text = self.id_[self.id_.find("/") + 1 :]
@@ -206,14 +206,16 @@ class Connection:
         ]
 
     @classmethod
-    def deserialize(cls, structure, stations: dict[str, Station]) -> Connection:
+    def deserialize(
+        cls, structure: dict[str, Any], stations: dict[str, Station]
+    ) -> Connection:
         return cls(
             stations[structure["to"]],
             ConnectionType(structure["type"]),
-            structure.get("status", None),
+            structure.get("status"),
         )
 
-    def serialize(self):
+    def serialize(self) -> dict[str, Any]:
         return {"to": self.to_.id_, "type": self.type_.value} | (
             {"status": self.status} if self.status else {}
         )

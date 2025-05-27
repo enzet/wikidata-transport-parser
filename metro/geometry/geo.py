@@ -14,7 +14,7 @@ class Position:
         longitude: float | None = None,
         latitude: float | None = None,
         altitude: float | None = None,
-    ):
+    ) -> None:
         self.longitude: float | None = longitude
         self.latitude: float | None = latitude
         self.altitude: float | None = altitude

@@ -11,7 +11,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-def main():
+def main() -> None:
     logging.basicConfig(format="%(levelname)s %(message)s", level=logging.INFO)
 
     parser: argparse.ArgumentParser = argparse.ArgumentParser()

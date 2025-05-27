@@ -9,7 +9,7 @@ __email__ = "me@enzet.ru"
 TIME_FORMAT = "%Y.%m.%d %H:%M:%S"
 
 
-def is_null(value):
+def is_null(value: Any) -> bool:
     return value is None or value == {} or value == []
 
 

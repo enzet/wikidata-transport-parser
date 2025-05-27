@@ -163,7 +163,7 @@ class WikidataTime:
         self.after = time_point["after"]
 
 
-def get_value(claim: dict):
+def get_value(claim: dict) -> Any:
     return claim["mainsnak"]["datavalue"]["value"]
 
 
@@ -360,7 +360,7 @@ class WikidataStationItem(WikidataItem):
         if not self.line_wikidata_ids:
             self.line_wikidata_ids = [0]
 
-    def fill_station(self, station: Station):
+    def fill_station(self, station: Station) -> None:
         station.set_names(self.names)
         station.geo_position = self.geo_position
         station.open_time = self.open_time
@@ -379,7 +379,7 @@ class WikidataLineItem(WikidataItem):
         structure: dict[str, Any],
         wikidata_id: int,
         local_languages: list[str] | None = None,
-    ):
+    ) -> None:
         super().__init__(structure, wikidata_id)
 
         self.id_ = data.compute_line_id(self.names, local_languages)

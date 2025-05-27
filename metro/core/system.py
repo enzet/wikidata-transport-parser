@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from metro.core.line import Line
 from metro.core.named import Named
 from metro.core.station import Connection, Station
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -27,7 +30,7 @@ class System(Named):
     line_width: float | None = None
     point_length: float | None = None
 
-    def deserialize(self, structure: dict[str, Any]):
+    def deserialize(self, structure: dict[str, Any]) -> None:
         """Deserialize transport system from structure."""
 
         if "lines" in structure:
@@ -85,7 +88,7 @@ class System(Named):
 
     # Station.
 
-    def get_stations_by_short_id(self, station_short_id) -> list[Station]:
+    def get_stations_by_short_id(self, station_short_id: str) -> list[Station]:
         return [
             station
             for station in self.stations.values()
@@ -93,7 +96,9 @@ class System(Named):
             or (station.id_ and station.id_.endswith("/" + station_short_id))
         ]
 
-    def get_station_by_wikidata_id(self, station_wikidata_id) -> Station | None:
+    def get_station_by_wikidata_id(
+        self, station_wikidata_id: int
+    ) -> Station | None:
         station: Station
         for station in self.stations.values():
             if station.wikidata_id == station_wikidata_id:
@@ -101,7 +106,7 @@ class System(Named):
         return None
 
     def get_station_by_line_and_wid(
-        self, line_id, station_wikidata_id
+        self, line_id: str, station_wikidata_id: int
     ) -> Station | None:
         station: Station
         for station in self.stations:
@@ -167,5 +172,5 @@ class Map:
     def get_local_languages(self) -> list[str]:
         return self.local_languages
 
-    def get_systems(self):
-        return self.systems.values()
+    def get_systems(self) -> Iterator[System]:
+        return iter(self.systems.values())

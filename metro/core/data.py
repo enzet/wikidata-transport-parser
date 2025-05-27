@@ -123,7 +123,7 @@ line_name_dict = {
 }
 
 
-def extract_line_name(name: str, language: str):
+def extract_line_name(name: str, language: str) -> str:
     """Try to remove all specifiers from the line caption.
 
     :param name: line caption with probably some specifiers
@@ -165,7 +165,7 @@ def compute_line_id(
     return output
 
 
-def get_date(string_date):
+def get_date(string_date: str) -> tuple[date, str]:
     """Parse date from `[[DD.]MM.]YYYY` representation.
 
     :param string_date: date `[[DD.]MM.]YYYY` representation
@@ -199,7 +199,9 @@ def get_date(string_date):
     return date(year, month, day), accuracy
 
 
-def get_date_representation(string_date, language, translator):
+def get_date_representation(
+    string_date: str, language: str, translator: dict[str, str]
+) -> str | None:
     """Date representation parsing from [[DD.]MM.]YYYY representation."""
     d, accuracy = get_date(string_date)
     if accuracy == "year":
