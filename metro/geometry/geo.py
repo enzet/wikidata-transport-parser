@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import numpy as np
 
@@ -11,13 +11,13 @@ class Position:
 
     def __init__(
         self,
-        longitude: Optional[float] = None,
-        latitude: Optional[float] = None,
-        altitude: Optional[float] = None,
+        longitude: float | None = None,
+        latitude: float | None = None,
+        altitude: float | None = None,
     ):
-        self.longitude: Optional[float] = longitude
-        self.latitude: Optional[float] = latitude
-        self.altitude: Optional[float] = altitude
+        self.longitude: float | None = longitude
+        self.latitude: float | None = latitude
+        self.altitude: float | None = altitude
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Position):
@@ -35,14 +35,14 @@ class Position:
         )
 
     @classmethod
-    def from_structure(cls, structure: dict) -> "Position":
+    def from_structure(cls, structure: dict) -> Position:
         """Deserialize from structure."""
         longitude: float = structure["longitude"]
         latitude: float = structure["latitude"]
-        altitude: Optional[float] = structure.get("altitude")
+        altitude: float | None = structure.get("altitude")
         return cls(longitude, latitude, altitude)
 
-    def to_structure(self) -> dict[str, Optional[float]]:
+    def to_structure(self) -> dict[str, float | None]:
         """Serialize to structure."""
         structure = {"longitude": self.longitude, "latitude": self.latitude}
         if self.altitude is not None:

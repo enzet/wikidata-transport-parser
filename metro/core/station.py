@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field, fields
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from metro.core import data
-from metro.core.line import Line
 from metro.core.named import Named
 from metro.core.serialization import (
     TIME_FORMAT,
@@ -13,6 +14,9 @@ from metro.core.serialization import (
     is_null,
     serialize,
 )
+
+if TYPE_CHECKING:
+    from metro.core.line import Line
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -26,22 +30,22 @@ class Station(Named):
     """Transport station."""
 
     id_: str
-    open_time: Optional[datetime] = None
-    altitude: Optional[float] = None
-    height: Optional[float] = None
-    structure_type: Optional["StationStructure"] = None
-    geo_position: Optional[tuple[float, float]] = None
-    caption: Optional[str] = None
-    connections: list["Connection"] = field(default_factory=list)
+    open_time: datetime | None = None
+    altitude: float | None = None
+    height: float | None = None
+    structure_type: StationStructure | None = None
+    geo_position: tuple[float, float] | None = None
+    caption: str | None = None
+    connections: list[Connection] = field(default_factory=list)
     status: dict[str, str] = field(default_factory=dict)
-    platform_length: Optional[float] = None
+    platform_length: float | None = None
     site_links: dict[str, str] = field(default_factory=dict)
-    wikidata_id: Optional[int] = None
-    line: Optional[Line] = None
+    wikidata_id: int | None = None
+    line: Line | None = None
 
     def deserialize(
         self, structure: dict[str, Any], lines: dict[str, Line]
-    ) -> "Station":
+    ) -> Station:
         """Deserialize station from structure."""
         assert structure["id"] == self.id_
 
@@ -87,15 +91,15 @@ class Station(Named):
         return data.extract_station_name(text, language)
 
     def get_connections(
-        self, connection_type: "ConnectionType" = None
-    ) -> list["Connection"]:
+        self, connection_type: ConnectionType = None
+    ) -> list[Connection]:
         return [
             x
             for x in self.connections
             if connection_type is None or x.type_ == connection_type
         ]
 
-    def get_connection(self, other: "Station") -> Optional["Connection"]:
+    def get_connection(self, other: Station) -> Connection | None:
         connections: list[Connection] = [
             x for x in self.connections if x.to_ == other
         ]
@@ -140,9 +144,9 @@ class Station(Named):
 
     def add_connection(
         self,
-        other_station: "Station",
-        type_: "ConnectionType",
-        status: Optional[dict] = None,
+        other_station: Station,
+        type_: ConnectionType,
+        status: dict | None = None,
     ) -> None:
         """Add connection from this station to another."""
         connection: Connection
@@ -155,7 +159,7 @@ class Station(Named):
         connection = Connection(other_station, type_, status)
         self.connections.append(connection)
 
-    def remove_connection(self, other_station: "Station") -> int:
+    def remove_connection(self, other_station: Station) -> int:
         """Remove connection from this station to another.
 
         :return: number of connections removed
@@ -190,7 +194,7 @@ class ConnectionType(Enum):
 
 @dataclass
 class Connection:
-    to_: Optional[Station]
+    to_: Station | None
     type_: ConnectionType
     status: dict = None
 
@@ -202,9 +206,7 @@ class Connection:
         ]
 
     @classmethod
-    def deserialize(
-        cls, structure, stations: dict[str, Station]
-    ) -> "Connection":
+    def deserialize(cls, structure, stations: dict[str, Station]) -> Connection:
         return cls(
             stations[structure["to"]],
             ConnectionType(structure["type"]),

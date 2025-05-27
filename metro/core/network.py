@@ -1,15 +1,19 @@
 """Utility for network connections."""
 
+from __future__ import annotations
+
 import time
-from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING
 
 import urllib3
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def get(
     address: str, parameters: dict[str, str], cache_file: Path
-) -> Optional[bytes]:
+) -> bytes | None:
     if cache_file.exists():
         with cache_file.open("rb") as input_file:
             return input_file.read()

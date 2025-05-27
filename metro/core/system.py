@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from metro.core.line import Line
 from metro.core.named import Named
@@ -21,9 +23,9 @@ class System(Named):
     stations: dict[str, Station] = field(default_factory=dict)
     lines: dict[str, Line] = field(default_factory=dict)
     lookup_station_id: dict[str, Station] = field(default_factory=dict)
-    style_id: Optional[str] = None
-    line_width: Optional[float] = None
-    point_length: Optional[float] = None
+    style_id: str | None = None
+    line_width: float | None = None
+    point_length: float | None = None
 
     def deserialize(self, structure: dict[str, Any]):
         """Deserialize transport system from structure."""
@@ -91,9 +93,7 @@ class System(Named):
             or (station.id_ and station.id_.endswith("/" + station_short_id))
         ]
 
-    def get_station_by_wikidata_id(
-        self, station_wikidata_id
-    ) -> Optional[Station]:
+    def get_station_by_wikidata_id(self, station_wikidata_id) -> Station | None:
         station: Station
         for station in self.stations.values():
             if station.wikidata_id == station_wikidata_id:
@@ -102,7 +102,7 @@ class System(Named):
 
     def get_station_by_line_and_wid(
         self, line_id, station_wikidata_id
-    ) -> Optional[Station]:
+    ) -> Station | None:
         station: Station
         for station in self.stations:
             if (

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import Any, Optional
+from typing import Any
 
 from metro.core.named import Named
 from metro.core.serialization import deserialize, is_null, serialize
@@ -16,14 +18,14 @@ class Line(Named):
     """
 
     id_: str
-    color: Optional[str] = None
+    color: str | None = None
 
     # Return index if this transport route has one. Index is a float that is
     # used to sort routes. E.g. we can use 1 for "Line 1", 10 for "Route 10",
     # and 5.1 for "Line 5A".
-    index: Optional[float] = None
+    index: float | None = None
 
-    def deserialize(self, structure: dict[str, Any]) -> "Line":
+    def deserialize(self, structure: dict[str, Any]) -> Line:
         """Deserialize transport route from structure."""
         for key in [x.name for x in fields(Line)]:
             if key in structure:

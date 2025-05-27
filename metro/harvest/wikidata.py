@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 import json
 import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
-from typing import Any, ClassVar, Optional
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from metro.core import data, network
 from metro.core.line import Line
 from metro.core.station import ConnectionType, ObjectStatus, Station
-from metro.core.system import Map, System
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from metro.core.system import Map, System
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -113,7 +118,7 @@ class WikidataItem:
             for site in self.entity["sitelinks"]:
                 self.site_links[site] = self.entity["sitelinks"][site]["title"]
 
-    def get_name(self, language: str = "en") -> Optional[str]:
+    def get_name(self, language: str = "en") -> str | None:
         """Get item name in specified language if it exists.
 
         :param language: requested language of the name
@@ -190,7 +195,7 @@ class WikidataStationItem(WikidataItem):
 
         name: str = WIKIDATA_ITEM_PREFIX + str(wikidata_id)
 
-        self.structure_type: Optional[str] = None
+        self.structure_type: str | None = None
 
         if WIKIDATA_PROPERTY_INSTANCE_OF in self.claims:
             for claim in self.claims[WIKIDATA_PROPERTY_INSTANCE_OF]:
@@ -257,8 +262,8 @@ class WikidataStationItem(WikidataItem):
                 except ValueError:
                     logging.warning("Invalid date: " + str(point))
 
-        self.geo_position: Optional[tuple[float, float]] = None
-        self.altitude: Optional[float] = None
+        self.geo_position: tuple[float, float] | None = None
+        self.altitude: float | None = None
 
         if WIKIDATA_PROPERTY_COORDINATES in self.claims:
             geo_structure: dict[str, float] = get_value(
@@ -294,7 +299,7 @@ class WikidataStationItem(WikidataItem):
                         "[WIKIDATA] no value for next station for " + name
                     )
                     continue
-                specified_line_wikidata_id: Optional[int] = None
+                specified_line_wikidata_id: int | None = None
                 if "qualifiers" in claim:
                     qualifiers = claim["qualifiers"]
                     if WIKIDATA_PROPERTY_LINE in qualifiers:
@@ -373,7 +378,7 @@ class WikidataLineItem(WikidataItem):
         self,
         structure: dict[str, Any],
         wikidata_id: int,
-        local_languages: Optional[list[str]] = None,
+        local_languages: list[str] | None = None,
     ):
         super().__init__(structure, wikidata_id)
 
@@ -488,7 +493,7 @@ class WikidataCityParser:
                 systems_dict[system_wikidata_id]
             ]
 
-    def parse(self, limit: Optional[int] = None) -> None:
+    def parse(self, limit: int | None = None) -> None:
         # TODO(enzet): Add filter, so we can parse only stations of one line, or
         # at least of one city.
 
@@ -593,8 +598,8 @@ class WikidataCityParser:
         line_wikidata_id: int
         line_item: WikidataLineItem
         for line_wikidata_id, line_item in line_items.items():
-            system: Optional[System] = None
-            line: Optional[Line] = None
+            system: System | None = None
+            line: Line | None = None
             # If line's system is system of interest.
             if (
                 line_item.system_wikidata_id

@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -34,7 +35,7 @@ class Named:
     def has_name(self, language: str) -> bool:
         return language in self.names or "int" in self.names
 
-    def get_name(self, language: str) -> Optional[str]:
+    def get_name(self, language: str) -> str | None:
         if language in self.names:
             return self.names[language]
         if "int" in self.names:

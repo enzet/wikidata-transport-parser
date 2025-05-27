@@ -4,10 +4,12 @@ Language-related parsing (if it more than just translation, see `i18n`), dates,
 any kind of names, captions, etc.
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -85,7 +87,7 @@ def extract_station_name(name: str, language: str) -> str:
 
 def compute_short_station_id(
     names: dict[str, str], local_languages: list[str]
-) -> Optional[str]:
+) -> str | None:
     """Create station short identifier.
 
     :param names: names in different languages
@@ -95,7 +97,7 @@ def compute_short_station_id(
     if not names:
         logging.error("cannot compute station ID, no names")
         return None
-    for language in ["en", *local_languages, *list(sorted(names.keys()))]:
+    for language in ["en", *local_languages, *sorted(names.keys())]:
         if language in names:
             return extract_station_name(names[language], language)
     return None
@@ -137,8 +139,8 @@ def extract_line_name(name: str, language: str):
 
 
 def compute_line_id(
-    names: dict[str, Any], local_languages: Optional[list[str]] = None
-) -> Optional[str]:
+    names: dict[str, Any], local_languages: list[str] | None = None
+) -> str | None:
     """Compute line identifier using its names in different languages.
 
     :param names: names of the line
@@ -156,7 +158,7 @@ def compute_line_id(
         local_languages = []
 
     # Sort language identifiers to make the result more predictable.
-    for language in ["en", *local_languages, *list(sorted(names.keys()))]:
+    for language in ["en", *local_languages, *sorted(names.keys())]:
         if language in names:
             return extract_line_name(names[language], language)
 
