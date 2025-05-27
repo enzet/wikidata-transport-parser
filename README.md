@@ -1,20 +1,26 @@
-# Metro
+# Transport Network Parser for Wikidata
 
-[Wikidata](https://wikidata.org) parser for transport networks.
+A [Wikidata](https://wikidata.org) parser for transport networks.
 
-## Install
+## Installation
 
-Requirements: Python 3.9.
+Requirements: Python 3.9 or higher.
 
 ```shell
 pip install .
 ```
 
-## Example run
+## Wikidata Parsing
 
-To parse Prague metro system one should specify system Wikidata item
+The algorithm takes as input a Wikidata identifier of an arbitrary transport
+station and a Wikidata identifier of the transport system. The algorithm will
+recursively parse the network structure.
+
+## Example Run
+
+To parse the Prague metro system, you need to specify the system's Wikidata item
 ([Q190271](https://www.wikidata.org/wiki/Q190271) for Prague Metro) and
-arbitrary station Wikidata item
+any station's Wikidata item
 ([Q1877386](https://www.wikidata.org/wiki/Q1877386) for Florenc metro station).
 
 ```shell
@@ -23,7 +29,7 @@ metro --system 190271 --station 1877386
 
 ## Output
 
-Result will be in `out/metro.json` file with the following structure:
+The result will be saved in the `out/metro.json` file with the following structure:
 
 ```json
 {
@@ -33,7 +39,7 @@ Result will be in `out/metro.json` file with the following structure:
 }
 ```
 
-### Station structure
+### Station Structure
 
 ```json
 {
@@ -58,7 +64,7 @@ Result will be in `out/metro.json` file with the following structure:
 }
 ```
 
-### Line structure
+### Line Structure
 
 ```json
 {
