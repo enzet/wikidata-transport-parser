@@ -19,27 +19,30 @@ class Position:
         self.latitude: Optional[float] = latitude
         self.altitude: Optional[float] = altitude
 
-    def __eq__(self, other: "Position") -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Position):
+            return False
+
         if (
             self.latitude is None
             or self.longitude is None
             or other.latitude is None
-            or self.longitude is None
+            or other.longitude is None
         ):
             return False
         return np.equal(self.longitude, other.longitude) and np.equal(
             self.latitude, other.latitude
         )
 
-    def from_structure(self, structure: dict) -> "Position":
+    @classmethod
+    def from_structure(cls, structure: dict) -> "Position":
         """Deserialize from structure."""
-        self.longitude = structure["longitude"]
-        self.latitude = structure["latitude"]
-        if "altitude" in structure and structure["altitude"] is not None:
-            self.altitude = structure["altitude"]
-        return self
+        longitude: float = structure["longitude"]
+        latitude: float = structure["latitude"]
+        altitude: Optional[float] = structure.get("altitude")
+        return cls(longitude, latitude, altitude)
 
-    def to_structure(self) -> dict[str, float]:
+    def to_structure(self) -> dict[str, Optional[float]]:
         """Serialize to structure."""
         structure = {"longitude": self.longitude, "latitude": self.latitude}
         if self.altitude is not None:
