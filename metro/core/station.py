@@ -17,6 +17,9 @@ from metro.core.serialization import (
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
+MAX_DEEP_HEIGHT: float = -6
+MIN_SHALLOW_HEIGHT: float = -15
+
 
 @dataclass
 class Station(Named):
@@ -256,12 +259,9 @@ class StationStructure(Enum):
         :param station_id: stations identifier
         """
         if (
-            self.is_ground()
-            and height < 0
-            or self.is_deep()
-            and height >= -6
-            or self.is_shallow()
-            and height < -15
+            (self.is_ground() and height < 0)
+            or (self.is_deep() and height >= MAX_DEEP_HEIGHT)
+            or (self.is_shallow() and height < MIN_SHALLOW_HEIGHT)
         ):
             logging.warning(
                 f"station {station_id} is {self.name} but height is {height}"
