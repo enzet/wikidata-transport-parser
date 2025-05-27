@@ -10,8 +10,7 @@ __email__ = "me@enzet.ru"
 
 @dataclass
 class Line(Named):
-    """
-    Transport route.
+    """Transport route.
 
     The definition of line may depend on transport system.
     """
@@ -19,8 +18,9 @@ class Line(Named):
     id_: str
     color: Optional[str] = None
 
-    # Return index if this transport route has one. Index is a float that is used to sort routes. E.g. we can use 1 for
-    # "Line 1", 10 for "Route 10", and 5.1 for "Line 5A".
+    # Return index if this transport route has one. Index is a float that is
+    # used to sort routes. E.g. we can use 1 for "Line 1", 10 for "Route 10",
+    # and 5.1 for "Line 5A".
     index: Optional[float] = None
 
     def deserialize(self, structure: dict[str, Any]) -> "Line":

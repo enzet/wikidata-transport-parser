@@ -108,7 +108,7 @@ class Station(Named):
                 self.altitude = 2
 
     def is_terminus(self) -> bool:
-        """Should we draw this station as terminus."""
+        """Check if we should draw this station as terminus."""
         if self.is_transition():
             return False
         count: int = 0
@@ -149,10 +149,9 @@ class Station(Named):
         self.connections.append(connection)
 
     def remove_connection(self, other_station: "Station") -> int:
-        """
-        Remove connection from this station to another.
+        """Remove connection from this station to another.
 
-        :returns number of connections removed
+        :return: number of connections removed
         """
         removed = 0
         new_structure = []
@@ -246,11 +245,12 @@ class StationStructure(Enum):
     GROUND_CLOSED = 20
 
     def check_height(self, height: float, station_id: str) -> None:
-        """
-        Check station structure and depth and print warning if there is inconsistency.
+        """Check station structure and depth.
 
-        :param height: station height.
-        :param station_id: stations identifier.
+        Print warning if there is inconsistency.
+
+        :param height: station height
+        :param station_id: stations identifier
         """
         if (
             self.is_ground()

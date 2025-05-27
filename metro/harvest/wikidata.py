@@ -70,7 +70,8 @@ class WikidataItem:
     """Item of Wikidata project."""
 
     def __init__(self, structure: dict, wikidata_id: int) -> None:
-        """
+        """Initialize Wikidata item.
+
         :param structure: Wikidata item structure
         :param wikidata_id: Wikidata item unique identifier
         """
@@ -113,10 +114,10 @@ class WikidataItem:
                 self.site_links[site] = self.entity["sitelinks"][site]["title"]
 
     def get_name(self, language: str = "en") -> Optional[str]:
-        """
-        Get item name in specified language if it exists.
+        """Get item name in specified language if it exists.
 
-        :param language: requested language of the name.
+        :param language: requested language of the name
+        :return: item name or `None`
         """
         if "labels" not in self.entity or language not in self.entity["labels"]:
             return None
@@ -421,10 +422,9 @@ class WikidataLineItem(WikidataItem):
         return line
 
     def fill_line(self, line: Line) -> None:
-        """
-        Fill existed line object with data from line Wikidata item.
+        """Fill existed line object with data from line Wikidata item.
 
-        :param line: existed Wikidata object.
+        :param line: existed Wikidata object
         """
         if self.color:  # and not line.has_color():
             line.color = self.color

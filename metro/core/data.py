@@ -1,6 +1,7 @@
-"""
-This module is for text data manipulation: language-related parsing (if it more than just translation, for this - i18n,
-dates, any kind of names, captions, etc.
+"""Module is for text data manipulation.
+
+Language-related parsing (if it more than just translation, see `i18n`), dates,
+any kind of names, captions, etc.
 """
 
 import logging
@@ -63,11 +64,15 @@ station_name_dict: dict[str, list[str]] = {
 
 
 def extract_station_name(name: str, language: str) -> str:
-    """
-    Station name extraction from it"s caption (which is used for Wikipedia or Wikidata page names). For example, for
-    "Baker Street station (London Underground)" it should give "Baker Street".
+    """Get station name from its caption.
 
-    :param: name: input station name
+    Station name extraction from its caption (which is used for Wikipedia or
+    Wikidata page names). For example, for "Baker Street station (London
+    Underground)" it should give "Baker Street".
+
+    :param name: input station name
+    :param language: language of the name
+    :return: station name
     """
     name = name.replace("&", "and")
 
@@ -81,12 +86,11 @@ def extract_station_name(name: str, language: str) -> str:
 def compute_short_station_id(
     names: dict[str, str], local_languages: list[str]
 ) -> Optional[str]:
-    """
-    Create station short identifier.
+    """Create station short identifier.
 
-    :param names: names in different languages.
-    :param local_languages: primary languages for the region.
-    :return: station ID or None.
+    :param names: names in different languages
+    :param local_languages: primary languages for the region
+    :return: station identifier or `None`
     """
     if not names:
         logging.error("cannot compute station ID, no names")
@@ -117,12 +121,11 @@ line_name_dict = {
 
 
 def extract_line_name(name: str, language: str):
-    """
-    Try to remove all specifiers from the line caption.
+    """Try to remove all specifiers from the line caption.
 
-    :param name: line caption with probably some specifiers.
-    :param language: language of the name.
-    :return: pure line caption.
+    :param name: line caption with probably some specifiers
+    :param language: language of the name
+    :return: pure line caption
     """
     if language in line_name_dict:
         for pattern in line_name_dict[language]:
@@ -135,11 +138,12 @@ def extract_line_name(name: str, language: str):
 def compute_line_id(
     names: dict[str, Any], local_languages: list[str] = None
 ) -> Optional[str]:
-    """
-    Compute line identifier using its names in different languages.
+    """Compute line identifier using its names in different languages.
 
-    :param names: names of the line.
-    :param local_languages: local language identifiers of the area this line belongs to.
+    :param names: names of the line
+    :param local_languages: local language identifiers of the area this line
+        belongs to
+    :return: line ID or None
     """
     if not names:
         logging.error("cannot compute line ID, no names")
@@ -159,11 +163,10 @@ def compute_line_id(
 
 
 def get_date(string_date):
-    """
-    Parsing date from [[DD.]MM.]YYYY representation.
+    """Parse date from `[[DD.]MM.]YYYY` representation.
 
-    :param: string_date: date [[DD.]MM.]YYYY representation
-    :return: date and accuracy (may be "year", "month", or "day")
+    :param string_date: date `[[DD.]MM.]YYYY` representation
+    :return: date and accuracy (may be `year`, `month`, or `day`)
     """
     year, month, day = 1, 1, 1
     accuracy = "none"
@@ -180,7 +183,9 @@ def get_date(string_date):
         accuracy = "month"
 
     if m := re.match(
-        "^(?P<day>\\d\\d)[.\\- ](?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$",
+        "^(?P<day>\\d\\d)[.\\- ]"
+        "(?P<month>\\d\\d)[.\\- ]"
+        "(?P<year>\\d\\d\\d\\d)$",
         string_date,
     ):
         day = int(m.group("day"))
