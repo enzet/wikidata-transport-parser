@@ -4,7 +4,7 @@ import logging
 import sys
 from pathlib import Path
 
-from metro.core.system import System, Map
+from metro.core.system import Map, System
 from metro.harvest.wikidata import WikidataCityParser, WikidataParser
 
 __author__ = "Sergey Vartanov"

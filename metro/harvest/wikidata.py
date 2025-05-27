@@ -87,7 +87,7 @@ class WikidataItem:
             WIKIDATA_ITEM_PREFIX + str(wikidata_id)
         ]
 
-        self.claims = self.entity["claims"] if "claims" in self.entity else {}
+        self.claims = self.entity.get("claims", {})
 
         self.names: dict[str, str] = {}
         if "labels" in self.entity:
@@ -386,18 +386,20 @@ class WikidataLineItem(WikidataItem):
                 self.claims[WIKIDATA_PROPERTY_COLOR][0]
             )
 
-        if WIKIDATA_PROPERTY_COMPLEX_COLOR in self.claims:
-            if "qualifiers" in self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][0]:
-                for qualifier in self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][
-                    0
-                ]["qualifiers"]:
-                    if qualifier == WIKIDATA_PROPERTY_COLOR:
-                        self.color = (
-                            "#"
-                            + self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][0][
-                                "qualifiers"
-                            ][WIKIDATA_PROPERTY_COLOR][0]["datavalue"]["value"]
-                        )
+        if (
+            WIKIDATA_PROPERTY_COMPLEX_COLOR in self.claims
+            and "qualifiers" in self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][0]
+        ):
+            for qualifier in self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][0][
+                "qualifiers"
+            ]:
+                if qualifier == WIKIDATA_PROPERTY_COLOR:
+                    self.color = (
+                        "#"
+                        + self.claims[WIKIDATA_PROPERTY_COMPLEX_COLOR][0][
+                            "qualifiers"
+                        ][WIKIDATA_PROPERTY_COLOR][0]["datavalue"]["value"]
+                    )
 
         self.system_wikidata_id = None
 
@@ -599,11 +601,7 @@ class WikidataCityParser:
                 and line_item.system_wikidata_id in self.systems_dict
             ):
                 system = self.systems_dict[line_item.system_wikidata_id]
-                line = (
-                    system.lines[line_item.id_]
-                    if line_item.id_ in system.lines
-                    else None
-                )
+                line = system.lines.get(line_item.id_, None)
             # If system itself was defined as a line (if there is only one line
             # in transport system).
             elif line_wikidata_id in self.systems_dict:

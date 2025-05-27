@@ -2,7 +2,7 @@ from dataclasses import dataclass, fields
 from typing import Any, Optional
 
 from metro.core.named import Named
-from metro.core.serialization import is_null, deserialize, serialize
+from metro.core.serialization import deserialize, is_null, serialize
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"

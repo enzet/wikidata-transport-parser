@@ -8,10 +8,10 @@ from metro.core import data
 from metro.core.line import Line
 from metro.core.named import Named
 from metro.core.serialization import (
+    TIME_FORMAT,
     deserialize,
     is_null,
     serialize,
-    TIME_FORMAT,
 )
 
 __author__ = "Sergey Vartanov"
@@ -103,9 +103,12 @@ class Station(Named):
 
     def recompute(self) -> None:
         """Assume ground station altitude."""
-        if self.structure_type and self.altitude is None:
-            if StationStructure.is_ground(self.structure_type):
-                self.altitude = 2
+        if (
+            self.structure_type
+            and self.altitude is None
+            and StationStructure.is_ground(self.structure_type)
+        ):
+            self.altitude = 2
 
     def is_terminus(self) -> bool:
         """Check if we should draw this station as terminus."""
@@ -141,7 +144,7 @@ class Station(Named):
         connection: Connection
         for connection in self.connections:
             if connection.to_ == other_station:
-                if not connection.type_ == type_:
+                if connection.type_ != type_:
                     logging.warning("change connection type")
                     connection.type_ = type_
                 return
@@ -201,7 +204,7 @@ class Connection:
         return cls(
             stations[structure["to"]],
             ConnectionType(structure["type"]),
-            structure["status"] if "status" in structure else None,
+            structure.get("status", None),
         )
 
     def serialize(self):

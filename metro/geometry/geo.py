@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 
@@ -39,7 +39,7 @@ class Position:
             self.altitude = structure["altitude"]
         return self
 
-    def to_structure(self) -> Dict[str, float]:
+    def to_structure(self) -> dict[str, float]:
         """Serialize to structure."""
         structure = {"longitude": self.longitude, "latitude": self.latitude}
         if self.altitude is not None:

@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -24,7 +24,7 @@ class Named:
         self.names[language] = name
 
     def set_names(
-        self, names: Dict[str, str], ignore_rewrite: bool = True
+        self, names: dict[str, str], ignore_rewrite: bool = True
     ) -> None:
         [
             self.set_name(language, names[language], ignore_rewrite)
