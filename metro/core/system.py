@@ -149,7 +149,7 @@ class System(Named):
             raise Exception()
 
         bounds: tuple[float, float] = (
-            list(self.stations.values())[0].altitude,
+            next(iter(self.stations.values())).altitude,
         ) * 2
         for station in self.stations.values():
             height: float = station.altitude

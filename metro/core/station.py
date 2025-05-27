@@ -138,7 +138,7 @@ class Station(Named):
         self,
         other_station: "Station",
         type_: "ConnectionType",
-        status: dict = None,
+        status: Optional[dict] = None,
     ) -> None:
         """Add connection from this station to another."""
         connection: Connection

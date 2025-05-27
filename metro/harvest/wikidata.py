@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 from metro.core import data, network
 from metro.core.line import Line
@@ -169,7 +169,7 @@ class WikidataStationItem(WikidataItem):
     station definition of the project.
     """
 
-    type_map: dict[str, dict[str, ObjectStatus]] = {
+    type_map: ClassVar[dict[str, dict[str, ObjectStatus]]] = {
         "en": {
             "prospective": ObjectStatus.PLANNED,
             "planned": ObjectStatus.PLANNED,
@@ -373,7 +373,7 @@ class WikidataLineItem(WikidataItem):
         self,
         structure: dict[str, Any],
         wikidata_id: int,
-        local_languages: list[str] = None,
+        local_languages: Optional[list[str]] = None,
     ):
         super().__init__(structure, wikidata_id)
 

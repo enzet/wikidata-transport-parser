@@ -11,9 +11,9 @@ class Position:
 
     def __init__(
         self,
-        longitude: float = None,
-        latitude: float = None,
-        altitude: float = None,
+        longitude: Optional[float] = None,
+        latitude: Optional[float] = None,
+        altitude: Optional[float] = None,
     ):
         self.longitude: Optional[float] = longitude
         self.latitude: Optional[float] = latitude

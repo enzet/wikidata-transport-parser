@@ -95,7 +95,7 @@ def compute_short_station_id(
     if not names:
         logging.error("cannot compute station ID, no names")
         return None
-    for language in ["en"] + local_languages + list(sorted(names.keys())):
+    for language in ["en", *local_languages, *list(sorted(names.keys()))]:
         if language in names:
             return extract_station_name(names[language], language)
 
@@ -136,7 +136,7 @@ def extract_line_name(name: str, language: str):
 
 
 def compute_line_id(
-    names: dict[str, Any], local_languages: list[str] = None
+    names: dict[str, Any], local_languages: Optional[list[str]] = None
 ) -> Optional[str]:
     """Compute line identifier using its names in different languages.
 
@@ -155,7 +155,7 @@ def compute_line_id(
         local_languages = []
 
     # Sort language identifiers to make the result more predictable.
-    for language in ["en"] + local_languages + list(sorted(names.keys())):
+    for language in ["en", *local_languages, *list(sorted(names.keys()))]:
         if language in names:
             return extract_line_name(names[language], language)
 

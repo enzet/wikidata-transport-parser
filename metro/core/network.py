@@ -41,7 +41,7 @@ def get_data(
     address: str,
     parameters: dict[str, str],
     is_secure: bool = False,
-    name: str = None,
+    name: Optional[str] = None,
 ) -> bytes:
     """Construct Internet page URL and get its descriptor.
 
