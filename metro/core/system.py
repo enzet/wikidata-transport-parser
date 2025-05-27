@@ -84,14 +84,12 @@ class System(Named):
     # Station.
 
     def get_stations_by_short_id(self, station_short_id) -> list[Station]:
-        result = []
-        station: Station
-        for station in self.stations.values():
-            if (station.short_id() == station_short_id) or (
-                station.id_ and station.id_.endswith("/" + station_short_id)
-            ):
-                result.append(station)
-        return result
+        return [
+            station
+            for station in self.stations.values()
+            if (station.short_id() == station_short_id)
+            or (station.id_ and station.id_.endswith("/" + station_short_id))
+        ]
 
     def get_station_by_wikidata_id(
         self, station_wikidata_id
@@ -115,23 +113,19 @@ class System(Named):
         return None
 
     def get_stations_by_name(self, name: str, language: str) -> list[Station]:
-        result = []
-        station: Station
-        for station in self.stations:
-            if (
-                station.has_name(language)
-                and station.get_caption(language) == name
-            ):
-                result.append(station)
-        return result
+        return [
+            station
+            for station in self.stations.values()
+            if station.has_name(language)
+            and station.get_caption(language) == name
+        ]
 
     def get_stations_by_line(self, line: Line) -> list[Station]:
-        result = []
-        station: Station
-        for station in self.stations:
-            if station.line == line:
-                result.append(station)
-        return result
+        return [
+            station
+            for station in self.stations.values()
+            if station.line == line
+        ]
 
     # Line.
 
