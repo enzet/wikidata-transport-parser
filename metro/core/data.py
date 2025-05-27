@@ -2,6 +2,7 @@
 This module is for text data manipulation: language-related parsing (if it more than just translation, for this - i18n,
 dates, any kind of names, captions, etc.
 """
+
 import logging
 import re
 from datetime import date
@@ -11,7 +12,9 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-EN_SYSTEM_TYPE: str = "[Mm]etro|London [Uu]nderground|[Uu]nderground|[Tt]ube|[Ss]ubway|[Rr]ailway"
+EN_SYSTEM_TYPE: str = (
+    "[Mm]etro|London [Uu]nderground|[Uu]nderground|[Tt]ube|[Ss]ubway|[Rr]ailway"
+)
 EN_CAPTION: str = f"(?P<name>((?!([Ss]tation|{EN_SYSTEM_TYPE})).)*)"
 
 station_name_dict: dict[str, list[str]] = {
@@ -20,7 +23,11 @@ station_name_dict: dict[str, list[str]] = {
     "be-tarask": ["^(?P<name>.*) \\(станцыя мэтро\\)$"],
     "bg": ["^Метростанция „(?P<name>.*)“$"],
     "bn": ["^(?P<name>.*) মেট্রো স্টেশন$"],
-    "de": ["^Bahnhof (?P<name>.*)$", "^U-Bahnhof (?P<name>.*)$", "^S-Bahnhof (?P<name>.*)$"],
+    "de": [
+        "^Bahnhof (?P<name>.*)$",
+        "^U-Bahnhof (?P<name>.*)$",
+        "^S-Bahnhof (?P<name>.*)$",
+    ],
     "en": [
         f"^{EN_CAPTION}( \\(?({EN_SYSTEM_TYPE})( )?[Ss]tation(s)?\\)?)$",
         f"^{EN_CAPTION} \\((?P<line>.*)[ _][Ll]ine\\)$",
@@ -31,7 +38,10 @@ station_name_dict: dict[str, list[str]] = {
         "^(?P<name>.* Railway Station) metro station$",
     ],
     "fi": ["^(?P<name>.*) metroasema$"],
-    "it": ["^(?P<name>.*) \\(.*\\)$", "^(?P<name>.*)-(Kol'cevaja|Radial'naja)$"],
+    "it": [
+        "^(?P<name>.*) \\(.*\\)$",
+        "^(?P<name>.*)-(Kol'cevaja|Radial'naja)$",
+    ],
     "ja": ["^(?P<name>.*)駅( \\(.*\\))?$"],
     "nl": ["^(?P<name>.*) \\(metrostation\\)$"],
     "pl": ["^Stacja (?P<name>.*)$"],
@@ -42,7 +52,10 @@ station_name_dict: dict[str, list[str]] = {
         "^(?P<name>.*) \\(станция метро, .*\\)$",
     ],
     "tt": ["^(?P<name>.*) \\(метро станциясе\\)$"],
-    "uk": ["^(?P<name>.*) \\(станція метро\\)$", "^(?P<name>.*) \\(станція метро, (?P<city>.*)\\)$"],
+    "uk": [
+        "^(?P<name>.*) \\(станція метро\\)$",
+        "^(?P<name>.*) \\(станція метро, (?P<city>.*)\\)$",
+    ],
     "zh": [
         "^(?P<name>.*)站$",
     ],
@@ -65,7 +78,9 @@ def extract_station_name(name: str, language: str) -> str:
     return name
 
 
-def compute_short_station_id(names: dict[str, str], local_languages: list[str]) -> Optional[str]:
+def compute_short_station_id(
+    names: dict[str, str], local_languages: list[str]
+) -> Optional[str]:
     """
     Create station short identifier.
 
@@ -117,7 +132,9 @@ def extract_line_name(name: str, language: str):
     return name
 
 
-def compute_line_id(names: dict[str, Any], local_languages: list[str] = None) -> Optional[str]:
+def compute_line_id(
+    names: dict[str, Any], local_languages: list[str] = None
+) -> Optional[str]:
     """
     Compute line identifier using its names in different languages.
 
@@ -155,12 +172,17 @@ def get_date(string_date):
         year = int(m.group("year"))
         accuracy = "year"
 
-    if m := re.match("^(?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$", string_date):
+    if m := re.match(
+        "^(?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$", string_date
+    ):
         month = int(m.group("month"))
         year = int(m.group("year"))
         accuracy = "month"
 
-    if m := re.match("^(?P<day>\\d\\d)[.\\- ](?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$", string_date):
+    if m := re.match(
+        "^(?P<day>\\d\\d)[.\\- ](?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$",
+        string_date,
+    ):
         day = int(m.group("day"))
         month = int(m.group("month"))
         year = int(m.group("year"))
@@ -178,9 +200,15 @@ def get_date_representation(string_date, language, translator):
         if language == "en":
             return d.strftime("%B %Y")
         else:
-            return translator[d.strftime("%B").lower()][language + "-rod"] + d.strftime(" %Y")
+            return translator[d.strftime("%B").lower()][
+                language + "-rod"
+            ] + d.strftime(" %Y")
     if accuracy == "day":
         if language == "en":
             return str(d.day) + d.strftime(" %B %Y")
         else:
-            return str(d.day) + translator[d.strftime("%B").lower()][language + "-rod"] + d.strftime(" %Y")
+            return (
+                str(d.day)
+                + translator[d.strftime("%B").lower()][language + "-rod"]
+                + d.strftime(" %Y")
+            )

@@ -12,8 +12,9 @@ from typing import Optional
 import urllib3
 
 
-def get(address: str, parameters: dict[str, str], cache_file: Path) -> Optional[bytes]:
-
+def get(
+    address: str, parameters: dict[str, str], cache_file: Path
+) -> Optional[bytes]:
     if cache_file.exists():
         with cache_file.open("rb") as input_file:
             return input_file.read()
@@ -36,9 +37,13 @@ def get(address: str, parameters: dict[str, str], cache_file: Path) -> Optional[
     return None
 
 
-def get_data(address: str, parameters: dict[str, str], is_secure: bool = False, name: str = None) -> bytes:
-    """
-    Construct Internet page URL and get its descriptor.
+def get_data(
+    address: str,
+    parameters: dict[str, str],
+    is_secure: bool = False,
+    name: str = None,
+) -> bytes:
+    """Construct Internet page URL and get its descriptor.
 
     :param address: first part of URL without "http://"
     :param parameters: URL parameters
@@ -61,9 +66,17 @@ def get_data(address: str, parameters: dict[str, str], is_secure: bool = False, 
     return result.data
 
 
-def get_content(address, parameters, cache_file_name, kind, is_secure, name=None, exceptions=None, update_cache=False):
-    """
-    Read content from URL or from cached file.
+def get_content(
+    address,
+    parameters,
+    cache_file_name,
+    kind,
+    is_secure,
+    name=None,
+    exceptions=None,
+    update_cache=False,
+):
+    """Read content from URL or from cached file.
 
     :param address: first part of URL without "http://"
     :param parameters: URL parameters
@@ -75,7 +88,8 @@ def get_content(address, parameters, cache_file_name, kind, is_secure, name=None
         return None
     if (
         os.path.isfile(cache_file_name)
-        and datetime(1, 1, 1).fromtimestamp(os.stat(cache_file_name).st_mtime) > datetime.now() - timedelta(days=90)
+        and datetime(1, 1, 1).fromtimestamp(os.stat(cache_file_name).st_mtime)
+        > datetime.now() - timedelta(days=90)
         and not update_cache
     ):
         with open(cache_file_name) as cache_file:
@@ -96,14 +110,21 @@ def get_content(address, parameters, cache_file_name, kind, is_secure, name=None
                         cached.write(json.dumps(obj, indent=4))
                     return obj
                 except ValueError:
-                    logging.error("cannot get " + address + " " + str(parameters))
+                    logging.error(
+                        "cannot get " + address + " " + str(parameters)
+                    )
                     return None
             if kind == "html":
                 with open(cache_file_name, "w+") as cached:
                     cached.write(data)
                 return data
         except Exception as e:
-            logging.error("during getting JSON from " + address + " with parameters " + str(parameters))
+            logging.error(
+                "during getting JSON from "
+                + address
+                + " with parameters "
+                + str(parameters)
+            )
             print(e)
             if exceptions:
                 exceptions.append(address)

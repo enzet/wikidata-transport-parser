@@ -14,5 +14,7 @@ def test_simple() -> None:
     map_: Map = Map("test_map")
     map_.local_languages = ["cz"]
     map_.systems = {"metro": System({}, "metro")}
-    parser: WikidataCityParser = WikidataCityParser(wikidata_parser, map_, {1: "metro"}, [2], 1, [])
+    parser: WikidataCityParser = WikidataCityParser(
+        wikidata_parser, map_, {1: "metro"}, [2], 1, []
+    )
     parser.parse()

@@ -36,7 +36,9 @@ class System(Named):
         if "stations" in structure:
             station_structure: dict[str, Any]
             for station_structure in structure["stations"]:
-                station: Station = Station({}, station_structure["id"]).deserialize(station_structure, self.lines)
+                station: Station = Station(
+                    {}, station_structure["id"]
+                ).deserialize(station_structure, self.lines)
                 if "line" in station_structure:
                     station.line = self.lines[station_structure["line"]]
                 self.stations[station.id_] = station
@@ -44,8 +46,14 @@ class System(Named):
             for station_structure in structure["stations"]:
                 if "connections" in station_structure:
                     station: Station = self.stations[station_structure["id"]]
-                    for connection_structure in station_structure["connections"]:
-                        station.connections.append(Connection.deserialize(connection_structure, self.stations))
+                    for connection_structure in station_structure[
+                        "connections"
+                    ]:
+                        station.connections.append(
+                            Connection.deserialize(
+                                connection_structure, self.stations
+                            )
+                        )
 
         for key in structure:
             value = structure[key]
@@ -85,17 +93,24 @@ class System(Named):
                 result.append(station)
         return result
 
-    def get_station_by_wikidata_id(self, station_wikidata_id) -> Optional[Station]:
+    def get_station_by_wikidata_id(
+        self, station_wikidata_id
+    ) -> Optional[Station]:
         station: Station
         for station in self.stations.values():
             if station.wikidata_id == station_wikidata_id:
                 return station
         return None
 
-    def get_station_by_line_and_wid(self, line_id, station_wikidata_id) -> Optional[Station]:
+    def get_station_by_line_and_wid(
+        self, line_id, station_wikidata_id
+    ) -> Optional[Station]:
         station: Station
         for station in self.stations:
-            if station.wikidata_id == station_wikidata_id and station.line_id == line_id:
+            if (
+                station.wikidata_id == station_wikidata_id
+                and station.line_id == line_id
+            ):
                 return station
         return None
 
@@ -103,7 +118,10 @@ class System(Named):
         result = []
         station: Station
         for station in self.stations:
-            if station.has_name(language) and station.get_caption(language) == name:
+            if (
+                station.has_name(language)
+                and station.get_caption(language) == name
+            ):
                 result.append(station)
         return result
 
@@ -119,7 +137,9 @@ class System(Named):
 
     def has_transitions(self) -> bool:
         """If there is at least one transition station."""
-        return any(station.is_transition() for station in self.stations.values())
+        return any(
+            station.is_transition() for station in self.stations.values()
+        )
 
     def get_station_unique_names(self, language: str) -> set[str]:
         return {x.get_caption(language) for x in self.stations.values()}
@@ -128,7 +148,9 @@ class System(Named):
         if not len(self.stations):
             raise Exception()
 
-        bounds: tuple[float, float] = (list(self.stations.values())[0].altitude,) * 2
+        bounds: tuple[float, float] = (
+            list(self.stations.values())[0].altitude,
+        ) * 2
         for station in self.stations.values():
             height: float = station.altitude
             bounds = (min(bounds[0], height), max(bounds[1], height))

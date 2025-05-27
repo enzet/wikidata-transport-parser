@@ -7,7 +7,12 @@ from typing import Any, Optional
 from metro.core import data
 from metro.core.line import Line
 from metro.core.named import Named
-from metro.core.serialization import deserialize, is_null, serialize, TIME_FORMAT
+from metro.core.serialization import (
+    deserialize,
+    is_null,
+    serialize,
+    TIME_FORMAT,
+)
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -31,7 +36,9 @@ class Station(Named):
     wikidata_id: Optional[int] = None
     line: Optional[Line] = None
 
-    def deserialize(self, structure: dict[str, Any], lines: dict[str, Line]) -> "Station":
+    def deserialize(
+        self, structure: dict[str, Any], lines: dict[str, Line]
+    ) -> "Station":
         """Deserialize station from structure."""
         assert structure["id"] == self.id_
 
@@ -75,11 +82,19 @@ class Station(Named):
                 text = self.get_name(language + postfix)
         return data.extract_station_name(text, language)
 
-    def get_connections(self, connection_type: "ConnectionType" = None) -> list["Connection"]:
-        return [x for x in self.connections if connection_type is None or x.type_ == connection_type]
+    def get_connections(
+        self, connection_type: "ConnectionType" = None
+    ) -> list["Connection"]:
+        return [
+            x
+            for x in self.connections
+            if connection_type is None or x.type_ == connection_type
+        ]
 
     def get_connection(self, other: "Station") -> Optional["Connection"]:
-        connections: list[Connection] = [x for x in self.connections if x.to_ == other]
+        connections: list[Connection] = [
+            x for x in self.connections if x.to_ == other
+        ]
         return connections[0] if connections else None
 
     def check_height_and_structure(self) -> None:
@@ -106,13 +121,22 @@ class Station(Named):
                     count_for_hidden += 1
                 else:
                     count += 1
-        return (count + count_for_hidden <= 1) if self.is_hidden() else count <= 1
+        return (
+            (count + count_for_hidden <= 1) if self.is_hidden() else count <= 1
+        )
 
     def is_transition(self) -> bool:
         """If this station is as transition station."""
-        return any(x.type_ == ConnectionType.TRANSITION for x in self.connections)
+        return any(
+            x.type_ == ConnectionType.TRANSITION for x in self.connections
+        )
 
-    def add_connection(self, other_station: "Station", type_: "ConnectionType", status: dict = None) -> None:
+    def add_connection(
+        self,
+        other_station: "Station",
+        type_: "ConnectionType",
+        status: dict = None,
+    ) -> None:
         """Add connection from this station to another."""
         connection: Connection
         for connection in self.connections:
@@ -145,7 +169,11 @@ class Station(Named):
 
     def is_hidden(self) -> bool:
         """If station is not currently in operation."""
-        return self.status["type"] in [ObjectStatus.CLOSED, ObjectStatus.UNDER_CONSTRUCTION, ObjectStatus.PLANNED]
+        return self.status["type"] in [
+            ObjectStatus.CLOSED,
+            ObjectStatus.UNDER_CONSTRUCTION,
+            ObjectStatus.PLANNED,
+        ]
 
 
 class ConnectionType(Enum):
@@ -156,16 +184,21 @@ class ConnectionType(Enum):
 
 @dataclass
 class Connection:
-
     to_: Optional[Station]
     type_: ConnectionType
     status: dict = None
 
     def is_hidden(self) -> bool:
-        return self.status and self.status["type"] in ["closed", "under_construction", "planned"]
+        return self.status and self.status["type"] in [
+            "closed",
+            "under_construction",
+            "planned",
+        ]
 
     @classmethod
-    def deserialize(cls, structure, stations: dict[str, Station]) -> "Connection":
+    def deserialize(
+        cls, structure, stations: dict[str, Station]
+    ) -> "Connection":
         return cls(
             stations[structure["to"]],
             ConnectionType(structure["type"]),
@@ -173,7 +206,9 @@ class Connection:
         )
 
     def serialize(self):
-        return {"to": self.to_.id_, "type": self.type_.value} | ({"status": self.status} if self.status else {})
+        return {"to": self.to_.id_, "type": self.type_.value} | (
+            {"status": self.status} if self.status else {}
+        )
 
 
 class ObjectStatus(Enum):
@@ -217,8 +252,17 @@ class StationStructure(Enum):
         :param height: station height.
         :param station_id: stations identifier.
         """
-        if self.is_ground() and height < 0 or self.is_deep() and height >= -6 or self.is_shallow() and height < -15:
-            logging.warning(f"station {station_id} is {self.name} but height is {height}")
+        if (
+            self.is_ground()
+            and height < 0
+            or self.is_deep()
+            and height >= -6
+            or self.is_shallow()
+            and height < -15
+        ):
+            logging.warning(
+                f"station {station_id} is {self.name} but height is {height}"
+            )
 
     def is_ground(self) -> bool:
         return self.name[:6] == "GROUND"
