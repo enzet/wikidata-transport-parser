@@ -38,9 +38,11 @@
                                 },
                                 "type": {
                                     "description": "Type of the connection: next or transition",
-                                    "type": "string"
+                                    "type": "string",
+                                    "enum": ["next", "transition"]
                                 }
-                            }
+                            },
+                            "required": ["to", "type"]
                         }
                     }
                 },
