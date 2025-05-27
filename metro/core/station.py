@@ -48,7 +48,8 @@ class Station(Named):
         for key, value in structure.items():
             if key == "connections":
                 continue
-            elif key == "line":
+
+            if key == "line":
                 self.line = lines[value]
             elif key == "open_time":
                 self.open_time = datetime.strptime(value, TIME_FORMAT)

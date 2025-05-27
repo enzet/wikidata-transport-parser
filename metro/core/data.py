@@ -98,6 +98,7 @@ def compute_short_station_id(
     for language in ["en", *local_languages, *list(sorted(names.keys()))]:
         if language in names:
             return extract_station_name(names[language], language)
+    return None
 
 
 line_name_dict = {
@@ -204,16 +205,15 @@ def get_date_representation(string_date, language, translator):
     if accuracy == "month":
         if language == "en":
             return d.strftime("%B %Y")
-        else:
-            return translator[d.strftime("%B").lower()][
-                language + "-rod"
-            ] + d.strftime(" %Y")
+        return translator[d.strftime("%B").lower()][
+            language + "-rod"
+        ] + d.strftime(" %Y")
     if accuracy == "day":
         if language == "en":
             return str(d.day) + d.strftime(" %B %Y")
-        else:
-            return (
-                str(d.day)
-                + translator[d.strftime("%B").lower()][language + "-rod"]
-                + d.strftime(" %Y")
-            )
+        return (
+            str(d.day)
+            + translator[d.strftime("%B").lower()][language + "-rod"]
+            + d.strftime(" %Y")
+        )
+    return None

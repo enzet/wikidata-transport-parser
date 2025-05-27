@@ -7,6 +7,7 @@ class MockWikidataParser:
     def parse_wikidata(wikidata_id: int) -> dict:
         if wikidata_id in [1, 2]:
             return {"entities": {f"Q{wikidata_id}": {"claims": {}}}}
+        return None
 
 
 def test_simple() -> None:
