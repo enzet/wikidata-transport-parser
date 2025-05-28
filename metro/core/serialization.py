@@ -6,7 +6,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-TIME_FORMAT = "%Y.%m.%d %H:%M:%S"
+TIME_FORMAT: str = "%Y.%m.%d %H:%M:%S"
 
 
 def is_null(value: Any) -> bool:

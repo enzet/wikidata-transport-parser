@@ -32,7 +32,6 @@ class System(Named):
 
     def deserialize(self, structure: dict[str, Any]) -> None:
         """Deserialize transport system from structure."""
-
         if "lines" in structure:
             line: dict[str, Any]
             for line in structure["lines"]:
@@ -147,11 +146,13 @@ class System(Named):
         if not len(self.stations):
             raise Exception()
 
-        bounds: tuple[float, float] = (
+        bounds: tuple[float | None, float | None] = (
             next(iter(self.stations.values())).altitude,
         ) * 2
         for station in self.stations.values():
-            height: float = station.altitude
+            height: float | None = station.altitude
+            if height is None:
+                continue
             bounds = (min(bounds[0], height), max(bounds[1], height))
         return bounds
 

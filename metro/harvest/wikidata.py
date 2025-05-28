@@ -80,7 +80,7 @@ class WikidataItem:
         :param structure: Wikidata item structure
         :param wikidata_id: Wikidata item unique identifier
         """
-        self.wikidata_id = wikidata_id
+        self.wikidata_id: int = wikidata_id
 
         if "entities" not in structure:
             logging.warning("no entities in Wikidata entity")
@@ -92,8 +92,9 @@ class WikidataItem:
             WIKIDATA_ITEM_PREFIX + str(wikidata_id)
         ]
 
-        self.claims = self.entity.get("claims", {})
-
+        self.claims: dict[str, list[dict[str, Any]]] = self.entity.get(
+            "claims", {}
+        )
         self.names: dict[str, str] = {}
         if "labels" in self.entity:
             for language in self.entity["labels"]:
@@ -150,17 +151,17 @@ class WikidataItem:
 
 class WikidataTime:
     def __init__(self, time_point: dict[str, Any]) -> None:
-        time = time_point["time"]
+        time: str = time_point["time"]
         if time[6:8] == "00":
             time = time[:6] + "01" + time[8:]
         if time[9:11] == "00":
             time = time[:9] + "01" + time[11:]
-        self.time = datetime.strptime(time, "+" + WIKIDATA_TIME_FORMAT)
+        self.time: datetime = datetime.strptime(time, "+" + WIKIDATA_TIME_FORMAT)
 
-        self.timezone = time_point["timezone"]
-        self.precision = time_point["precision"]
-        self.before = time_point["before"]
-        self.after = time_point["after"]
+        self.timezone: str = time_point["timezone"]
+        self.precision: int = time_point["precision"]
+        self.before: bool = time_point["before"]
+        self.after: bool = time_point["after"]
 
 
 def get_value(claim: dict) -> Any:
@@ -228,7 +229,7 @@ class WikidataStationItem(WikidataItem):
                 ]
             )
 
-        self.status = {}
+        self.status: dict[str, ObjectStatus] = {}
 
         for language in self.type_map:
             if language in self.descriptions:
@@ -237,7 +238,7 @@ class WikidataStationItem(WikidataItem):
                         self.status = {"type": self.type_map[language][pattern]}
                         break
 
-        self.open_time = None
+        self.open_time: datetime | None = None
 
         if WIKIDATA_PROPERTY_DATE_OF_OFFICIAL_OPENING in self.claims:
             if (
@@ -290,7 +291,7 @@ class WikidataStationItem(WikidataItem):
                 line_wikidata_id: int = get_value(claim)["numeric-id"]
                 self.line_wikidata_ids.append(line_wikidata_id)
 
-        self.next_connections: list[list[int, int]] = []
+        self.next_connections: list[tuple[int, int]] = []
 
         if WIKIDATA_PROPERTY_NEXT_STATION in self.claims:
             for claim in self.claims[WIKIDATA_PROPERTY_NEXT_STATION]:
@@ -318,7 +319,7 @@ class WikidataStationItem(WikidataItem):
                     line_wikidata_id = self.line_wikidata_ids[0]
 
                 self.next_connections.append(
-                    [next_station_wikidata_id, line_wikidata_id]
+                    (next_station_wikidata_id, line_wikidata_id)
                 )
 
         self.transition_connections: list[int] = []
@@ -337,7 +338,7 @@ class WikidataStationItem(WikidataItem):
                     transition_station_wikidata_id
                 )
 
-        self.height = None
+        self.height: float | None = None
 
         if WIKIDATA_PROPERTY_VERTICAL_DEPTH in self.claims:
             for claim in self.claims[WIKIDATA_PROPERTY_VERTICAL_DEPTH]:
@@ -347,7 +348,7 @@ class WikidataStationItem(WikidataItem):
                     )
                     continue
                 if get_value(claim)["unit"].endswith(WIKIDATA_ITEM_METER):
-                    self.height: float = -float(get_value(claim)["amount"])
+                    self.height = -float(get_value(claim)["amount"])
                 else:
                     logging.warning(
                         f"unsupported unit {get_value(claim)['unit']}"
@@ -382,9 +383,9 @@ class WikidataLineItem(WikidataItem):
     ) -> None:
         super().__init__(structure, wikidata_id)
 
-        self.id_ = data.compute_line_id(self.names, local_languages)
+        self.id_: str | None = data.compute_line_id(self.names, local_languages)
 
-        self.color = None
+        self.color: str | None = None
 
         if WIKIDATA_PROPERTY_COLOR in self.claims:
             self.color = "#" + get_value(
@@ -406,7 +407,7 @@ class WikidataLineItem(WikidataItem):
                         ][WIKIDATA_PROPERTY_COLOR][0]["datavalue"]["value"]
                     )
 
-        self.system_wikidata_id = None
+        self.system_wikidata_id: int | None = None
 
         if WIKIDATA_PROPERTY_PART_OF in self.claims:
             self.system_wikidata_id = get_value(
@@ -473,17 +474,17 @@ class WikidataCityParser:
         wikidata_id: int,
         network_update: list[str],
     ) -> None:
-        self.wikidata_parser = wikidata_parser
-        self.network_update = network_update
-        self.wikidata_id = wikidata_id
+        self.wikidata_parser: WikidataParser = wikidata_parser
+        self.network_update: list[str] = network_update
+        self.wikidata_id: int = wikidata_id
 
-        self.parsed_station_wikidata_ids = set()
-        self.to_parse_station_wikidata_ids = set(wikidata_init_ids)
+        self.parsed_station_wikidata_ids: set[int] = set()
+        self.to_parse_station_wikidata_ids: set[int] = set(wikidata_init_ids)
 
-        self.parsed_line_wikidata_ids = set()
-        self.to_parse_line_wikidata_ids = set()
+        self.parsed_line_wikidata_ids: set[int] = set()
+        self.to_parse_line_wikidata_ids: set[int] = set()
 
-        self.map = map_
+        self.map: Map = map_
 
         self.systems_dict: dict[int, System] = {}
 
@@ -497,9 +498,15 @@ class WikidataCityParser:
         # TODO(enzet): Add filter, so we can parse only stations of one line, or
         # at least of one city.
 
+        structure: dict
+
         if self.wikidata_id:
-            structure = self.wikidata_parser.parse_wikidata(self.wikidata_id)
-            item = WikidataSystemItem(structure, self.wikidata_id)
+            structure = self.wikidata_parser.parse_wikidata(
+                self.wikidata_id
+            )
+            item: WikidataSystemItem = WikidataSystemItem(
+                structure, self.wikidata_id
+            )
             self.map.names = item.names
 
         # Preprocessing: get all Wikidata items we need.
@@ -512,7 +519,7 @@ class WikidataCityParser:
         while len(self.to_parse_station_wikidata_ids) > 0:
             wikidata_id: int = self.to_parse_station_wikidata_ids.pop()
 
-            structure: dict = self.wikidata_parser.parse_wikidata(wikidata_id)
+            structure = self.wikidata_parser.parse_wikidata(wikidata_id)
             station_item: WikidataStationItem = WikidataStationItem(
                 structure, wikidata_id
             )
@@ -520,7 +527,7 @@ class WikidataCityParser:
             for pattern in self.network_update:
                 en_name = station_item.get_name("en")
                 if en_name and re.match(".*" + pattern + ".*", en_name):
-                    structure: dict = self.wikidata_parser.parse_wikidata(
+                    structure = self.wikidata_parser.parse_wikidata(
                         wikidata_id
                     )
                     station_item = WikidataStationItem(structure, wikidata_id)
@@ -530,7 +537,7 @@ class WikidataCityParser:
             line_wikidata_id: int
             for line_wikidata_id in station_item.line_wikidata_ids:
                 if line_wikidata_id not in self.parsed_line_wikidata_ids:
-                    structure: dict = self.wikidata_parser.parse_wikidata(
+                    structure = self.wikidata_parser.parse_wikidata(
                         line_wikidata_id
                     )
                     line_item: WikidataLineItem = WikidataLineItem(
@@ -543,7 +550,6 @@ class WikidataCityParser:
             if limit and count > limit:
                 break
 
-            line_wikidata_id: int
             for line_wikidata_id in station_item.line_wikidata_ids:
                 station_item.system_wikidata_ids.add(
                     line_items[line_wikidata_id].system_wikidata_id
@@ -559,14 +565,17 @@ class WikidataCityParser:
                     is_system_of_interest = True
                     break
 
-            line_wikidata_id: int
             for line_wikidata_id in station_item.line_wikidata_ids:
                 if line_wikidata_id in self.systems_dict:
                     is_system_of_interest = True
                     break
 
             if not is_system_of_interest:
-                logging.info("not interested in " + station_item.get_any_name())
+                logging.info(
+                    "not interested in %s, because it is part of systems %s",
+                    station_item.get_any_name(),
+                    station_item.system_wikidata_ids,
+                )
                 continue
 
             station_items[wikidata_id] = station_item
@@ -581,7 +590,6 @@ class WikidataCityParser:
                 ):
                     self.to_parse_station_wikidata_ids.add(other_id)
 
-            other_id: int
             for other_id, _ in station_item.next_connections:
                 if (
                     other_id not in self.parsed_station_wikidata_ids
@@ -595,8 +603,6 @@ class WikidataCityParser:
 
         lines: dict[int, Line] = {}
 
-        line_wikidata_id: int
-        line_item: WikidataLineItem
         for line_wikidata_id, line_item in line_items.items():
             system: System | None = None
             line: Line | None = None
@@ -627,18 +633,17 @@ class WikidataCityParser:
 
         station_wikidata_id: int
         for station_wikidata_id in station_items:
-            station_item: WikidataStationItem = station_items[
+            station_item = station_items[
                 station_wikidata_id
             ]
 
             item_stations: list[Station] = []
 
-            line_wikidata_id: int
             for line_wikidata_id in station_item.line_wikidata_ids:
                 if line_wikidata_id not in lines:  # It is not line of interest.
                     continue
-                line: Line = lines[line_wikidata_id]
-                station_id = (
+                line = lines[line_wikidata_id]
+                station_id: str = (
                     line.id_
                     + "/"
                     + data.compute_short_station_id(
@@ -656,7 +661,6 @@ class WikidataCityParser:
             # Connect all stations inside one Wikidata stations item.
             # TODO(enzet): Check if we need ConnectionType.SAME here.
 
-            station: Station
             for station in item_stations:
                 other_station: Station
                 for other_station in item_stations:
@@ -670,9 +674,8 @@ class WikidataCityParser:
 
             stations[station_wikidata_id] = item_stations
 
-        station_wikidata_id: int
         for station_wikidata_id in station_items:
-            station_item: WikidataStationItem = station_items[
+            station_item = station_items[
                 station_wikidata_id
             ]
 
@@ -689,9 +692,7 @@ class WikidataCityParser:
                     set(station_item.line_wikidata_ids),
                     set(other_station_item.line_wikidata_ids),
                 )
-                station: Station
                 for station in station_item.stations:
-                    other_station: Station
                     for other_station in other_station_item.stations:
                         if (
                             station.line == other_station.line
@@ -701,18 +702,15 @@ class WikidataCityParser:
                                 other_station, ConnectionType.NEXT
                             )
 
-            other_station_wikidata_id: int
             for (
                 other_station_wikidata_id
             ) in station_item.transition_connections:
                 if other_station_wikidata_id not in station_items:
                     continue
-                other_station_item: WikidataStationItem = station_items[
+                other_station_item = station_items[
                     other_station_wikidata_id
                 ]
-                station: Station
                 for station in station_item.stations:
-                    other_station: Station
                     for other_station in other_station_item.stations:
                         station.add_connection(
                             other_station, ConnectionType.TRANSITION
@@ -720,14 +718,11 @@ class WikidataCityParser:
 
         # Finally add all generated stations to system.
 
-        station_item: WikidataStationItem
         for station_item in station_items.values():
-            station: Station
             for station in station_item.get_stations():
                 station.recompute()
                 line = station.line
                 station_system = None
-                system: System
                 for system in self.map.systems.values():
                     if line in system.lines.values():
                         station_system = system

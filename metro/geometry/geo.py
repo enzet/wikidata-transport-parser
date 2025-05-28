@@ -1,23 +1,20 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
+@dataclass
 class Position:
     """Geographical position: longitude, latitude, and altitude."""
 
-    def __init__(
-        self,
-        longitude: float | None = None,
-        latitude: float | None = None,
-        altitude: float | None = None,
-    ) -> None:
-        self.longitude: float | None = longitude
-        self.latitude: float | None = latitude
-        self.altitude: float | None = altitude
+    longitude: float | None = None
+    latitude: float | None = None
+    altitude: float | None = None
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Position):
@@ -44,7 +41,9 @@ class Position:
 
     def to_structure(self) -> dict[str, float | None]:
         """Serialize to structure."""
-        structure = {"longitude": self.longitude, "latitude": self.latitude}
+        structure: dict[str, float | None] = {
+            "longitude": self.longitude, "latitude": self.latitude
+        }
         if self.altitude is not None:
             structure["altitude"] = self.altitude
         return structure

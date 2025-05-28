@@ -6,6 +6,7 @@ any kind of names, captions, etc.
 
 from __future__ import annotations
 
+from enum import Enum
 import logging
 import re
 from datetime import date
@@ -103,7 +104,7 @@ def compute_short_station_id(
     return None
 
 
-line_name_dict = {
+line_name_dict: dict[str, list[str]] = {
     "be": [
         "^(?P<name>.*) лінія$",
     ],
@@ -146,7 +147,7 @@ def compute_line_id(
     :param names: names of the line
     :param local_languages: local language identifiers of the area this line
         belongs to
-    :return: line ID or None
+    :return: line identifier or `None`
     """
     if not names:
         logging.error("cannot compute line ID, no names")
@@ -165,36 +166,43 @@ def compute_line_id(
     return output
 
 
-def get_date(string_date: str) -> tuple[date, str]:
+class DateAccuracy(Enum):
+    NONE = "none"
+    YEAR = "year"
+    MONTH = "month"
+    DAY = "day"
+
+
+def get_date(string_date: str) -> tuple[date, DateAccuracy]:
     """Parse date from `[[DD.]MM.]YYYY` representation.
 
     :param string_date: date `[[DD.]MM.]YYYY` representation
     :return: date and accuracy (may be `year`, `month`, or `day`)
     """
     year, month, day = 1, 1, 1
-    accuracy = "none"
+    accuracy: DateAccuracy = DateAccuracy.NONE
 
-    if m := re.match("^(?P<year>\\d\\d\\d\\d)$", string_date):
-        year = int(m.group("year"))
-        accuracy = "year"
+    if matcher := re.match("^(?P<year>\\d\\d\\d\\d)$", string_date):
+        year = int(matcher.group("year"))
+        accuracy = DateAccuracy.YEAR
 
-    if m := re.match(
+    if matcher := re.match(
         "^(?P<month>\\d\\d)[.\\- ](?P<year>\\d\\d\\d\\d)$", string_date
     ):
-        month = int(m.group("month"))
-        year = int(m.group("year"))
-        accuracy = "month"
+        month = int(matcher.group("month"))
+        year = int(matcher.group("year"))
+        accuracy = DateAccuracy.MONTH
 
-    if m := re.match(
+    if matcher := re.match(
         "^(?P<day>\\d\\d)[.\\- ]"
         "(?P<month>\\d\\d)[.\\- ]"
         "(?P<year>\\d\\d\\d\\d)$",
         string_date,
     ):
-        day = int(m.group("day"))
-        month = int(m.group("month"))
-        year = int(m.group("year"))
-        accuracy = "day"
+        day = int(matcher.group("day"))
+        month = int(matcher.group("month"))
+        year = int(matcher.group("year"))
+        accuracy = DateAccuracy.DAY
 
     return date(year, month, day), accuracy
 
@@ -202,17 +210,17 @@ def get_date(string_date: str) -> tuple[date, str]:
 def get_date_representation(
     string_date: str, language: str, translator: dict[str, str]
 ) -> str | None:
-    """Date representation parsing from [[DD.]MM.]YYYY representation."""
+    """Date representation parsing from `[[DD.]MM.]YYYY` representation."""
     d, accuracy = get_date(string_date)
-    if accuracy == "year":
+    if accuracy == DateAccuracy.YEAR:
         return d.strftime("%Y")
-    if accuracy == "month":
+    if accuracy == DateAccuracy.MONTH:
         if language == "en":
             return d.strftime("%B %Y")
         return translator[d.strftime("%B").lower()][
             language + "-rod"
         ] + d.strftime(" %Y")
-    if accuracy == "day":
+    if accuracy == DateAccuracy.DAY:
         if language == "en":
             return str(d.day) + d.strftime(" %B %Y")
         return (

@@ -9,7 +9,10 @@ __email__ = "me@enzet.ru"
 
 @dataclass
 class Named:
+    """Something that has proper names in different languages."""
+
     names: dict[str, str]
+    """Proper names in different languages."""
 
     def set_name(
         self, language: str, name: str, ignore_rewrite: bool = True

@@ -64,10 +64,10 @@ class Station(Named):
 
     def serialize(self) -> dict[str, Any]:
         """Serialize station to structure."""
-        structure = {"id": self.id_}
+        structure: dict[str, Any] = {"id": self.id_}
 
         for key in [x.name for x in fields(Station)]:
-            value = self.__getattribute__(key)
+            value: Any = self.__getattribute__(key)
             if key == "line":
                 structure[key] = value.id_
             elif not is_null(value):
@@ -164,14 +164,16 @@ class Station(Named):
 
         :return: number of connections removed
         """
-        removed = 0
-        new_structure = []
+        removed: int = 0
+        new_structure: list[Connection] = []
         connection: Connection
+
         for connection in self.connections:
             if connection.to_ != other_station:
                 new_structure.append(connection)
             else:
                 removed += 1
+
         self.connections = new_structure
         return removed
 
