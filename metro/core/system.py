@@ -144,7 +144,8 @@ class System(Named):
 
     def get_depth_bounds(self) -> tuple[float, float]:
         if not len(self.stations):
-            raise Exception()
+            message: str = "no stations"
+            raise ValueError(message)
 
         bounds: tuple[float | None, float | None] = (
             next(iter(self.stations.values())).altitude,
