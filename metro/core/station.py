@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any
 from metro.core import data
 from metro.core.named import Named
 from metro.core.serialization import (
-    TIME_FORMAT,
     deserialize,
     is_null,
     serialize,
@@ -56,7 +55,7 @@ class Station(Named):
             if key == "line":
                 self.line = lines[value]
             elif key == "open_time":
-                self.open_time = datetime.strptime(value, TIME_FORMAT)
+                self.open_time = datetime.fromisoformat(value)
             else:
                 self.__setattr__(key, deserialize(structure[key]))
 

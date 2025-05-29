@@ -4,7 +4,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from metro.core import data, network
@@ -67,8 +67,6 @@ WIKIDATA_ITEM_METRO_STATION = "Q928830"
 WIKIDATA_ITEM_RAPID_TRANSIT_LINE = "Q15079663"
 WIKIDATA_ITEM_STATION_LOCATED_UNDERGROUND = "Q22808403"
 WIKIDATA_ITEM_STATION_LOCATED_ON_SURFACE = "Q22808404"
-
-WIKIDATA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class WikidataItem:
@@ -156,9 +154,9 @@ class WikidataTime:
             time = time[:6] + "01" + time[8:]
         if time[9:11] == "00":
             time = time[:9] + "01" + time[11:]
-        self.time: datetime = datetime.strptime(
-            time, "+" + WIKIDATA_TIME_FORMAT
-        )
+        if time.startswith("+"):
+            time = time[1:]
+        self.time: datetime = datetime.fromisoformat(time)
 
         self.timezone: str = time_point["timezone"]
         self.precision: int = time_point["precision"]
@@ -260,7 +258,7 @@ class WikidataStationItem(WikidataItem):
                 try:
                     wikidata_time = WikidataTime(point)
                     self.open_time = wikidata_time.time
-                    if wikidata_time.time > datetime.now():
+                    if wikidata_time.time > datetime.now(UTC):
                         self.status = {"type": ObjectStatus.UNDER_CONSTRUCTION}
                 except ValueError:
                     logging.warning("Invalid date: %s", point)

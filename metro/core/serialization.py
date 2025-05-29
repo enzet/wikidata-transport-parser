@@ -6,9 +6,6 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-TIME_FORMAT: str = "%Y.%m.%d %H:%M:%S"
-
-
 def is_null(value: Any) -> bool:
     return value is None or value == {} or value == []
 
@@ -25,7 +22,7 @@ def serialize(value: Any) -> Any:
     if isinstance(value, dict):
         return {x: serialize(y) for x, y in value.items()}
     if isinstance(value, datetime):
-        return value.strftime(TIME_FORMAT)
+        return value.isoformat()
     if isinstance(value, Enum):
         return value.value
     return value.serialize()
