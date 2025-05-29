@@ -52,9 +52,9 @@ lint.ignore = [
     "PLR0912",  # Too many branches are allowed.
     "PLR0913",  # Too many arguments are allowed.
     "PLR0915",  # Too many statements are allowed.
+    "RUF001",  # Ambiguous symbols are allowed.
     "S101",  # Asserts are allowed in tests.
     "TD003",  # Issues for todos are not required.
-    "ISC001",
 ]
 
 # Allow autofix for all enabled rules (when `--fix` is used).
