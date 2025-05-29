@@ -6,8 +6,9 @@ import json
 import logging
 import re
 from dataclasses import dataclass
-from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any, ClassVar
+from datetime import datetime
+from time import timezone
+from typing import TYPE_CHECKING, Any, ClassVar, Union
 
 from metro.core import data, network
 from metro.core.line import Line
@@ -22,7 +23,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-JSONSerializable = str | int | float | list | dict | None
+JSONSerializable = Union[str, int, float, list, dict, None]
 
 WIKIDATA_ITEM_PREFIX = "Q"
 
@@ -271,7 +272,7 @@ class WikidataStationItem(WikidataItem):
                 try:
                     wikidata_time = WikidataTime(point)
                     self.open_time = wikidata_time.time
-                    if wikidata_time.time > datetime.now(UTC):
+                    if wikidata_time.time > datetime.now(tz=timezone.utc):
                         self.status = {"type": ObjectStatus.UNDER_CONSTRUCTION}
                 except ValueError:
                     logging.warning("Invalid date: %s", point)
@@ -369,11 +370,6 @@ class WikidataStationItem(WikidataItem):
 
         self.stations: list[Station] = []
 
-        # TODO(enzet): Line is empty for Moscow monorail stations. Have to think
-        # about more accurate fix.
-        if not self.line_wikidata_ids:
-            self.line_wikidata_ids = [0]
-
     def fill_station(self, station: Station) -> None:
         """Fill station object with data from Wikidata station item."""
 
@@ -469,18 +465,20 @@ class WikidataParser:
 
     cache_directory: Path
 
-    def parse_wikidata(self, wikidata_id: int) -> dict:
+    def parse_wikidata(self, wikidata_id: int) -> dict | None:
         """Parse Wikidata item by its ID."""
         parameters = {
             "action": "wbgetentities",
             "format": "json",
             "ids": WIKIDATA_ITEM_PREFIX + str(wikidata_id),
         }
-        content: bytes = network.get(
+        content: bytes | None = network.get(
             "www.wikidata.org/w/api.php",
             parameters,
             self.cache_directory / (WIKIDATA_ITEM_PREFIX + str(wikidata_id)),
         )
+        if content is None:
+            return None
         return json.loads(content.decode())
 
 
@@ -522,14 +520,15 @@ class WikidataCityParser:
         # TODO(enzet): Add filter, so we can parse only stations of one line, or
         # at least of one city.
 
-        structure: dict
+        structure: dict | None = None
 
         if self.wikidata_id:
             structure = self.wikidata_parser.parse_wikidata(self.wikidata_id)
-            item: WikidataSystemItem = WikidataSystemItem(
-                structure, self.wikidata_id
-            )
-            self.map.names = item.names
+            if structure is not None:
+                item: WikidataSystemItem = WikidataSystemItem(
+                    structure, self.wikidata_id
+                )
+                self.map.names = item.names
 
         # Preprocessing: get all Wikidata items we need.
 

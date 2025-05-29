@@ -1,14 +1,15 @@
 """Serialization of primitive values."""
 
+from __future__ import annotations
+
 from datetime import datetime
 from enum import Enum
+from typing import Union
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
-Serializable = (
-    str | int | float | list | tuple | dict | datetime | Enum | object
-)
+Serializable = Union[str, int, float, list, tuple, dict, datetime, Enum, object]
 
 
 def is_null(value: Serializable) -> bool:
