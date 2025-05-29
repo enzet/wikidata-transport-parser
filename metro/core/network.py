@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 def get(
     address: str, parameters: dict[str, str], cache_file: Path
 ) -> bytes | None:
+    """Get data from the network."""
+
     if cache_file.exists():
         with cache_file.open("rb") as input_file:
             return input_file.read()

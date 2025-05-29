@@ -1,3 +1,5 @@
+"""Transport system."""
+
 from __future__ import annotations
 
 import logging
@@ -83,11 +85,15 @@ class System(Named):
         } | ({"line_width": self.line_width} if self.line_width else {})
 
     def get_style_id(self) -> str:
+        """Get style identifier for the system."""
+
         return self.style_id if self.style_id else DEFAULT_STYLE_ID
 
     # Station.
 
     def get_stations_by_short_id(self, station_short_id: str) -> list[Station]:
+        """Get stations by short identifier."""
+
         return [
             station
             for station in self.stations.values()
@@ -98,6 +104,8 @@ class System(Named):
     def get_station_by_wikidata_id(
         self, station_wikidata_id: int
     ) -> Station | None:
+        """Get station by Wikidata identifier."""
+
         station: Station
         for station in self.stations.values():
             if station.wikidata_id == station_wikidata_id:
@@ -107,6 +115,8 @@ class System(Named):
     def get_station_by_line_and_wid(
         self, line_id: str, station_wikidata_id: int
     ) -> Station | None:
+        """Get station by line and Wikidata identifier."""
+
         station: Station
         for station in self.stations:
             if (
@@ -117,6 +127,8 @@ class System(Named):
         return None
 
     def get_stations_by_name(self, name: str, language: str) -> list[Station]:
+        """Get stations by name in specified language."""
+
         return [
             station
             for station in self.stations.values()
@@ -125,6 +137,8 @@ class System(Named):
         ]
 
     def get_stations_by_line(self, line: Line) -> list[Station]:
+        """Get stations by line object."""
+
         return [
             station
             for station in self.stations.values()
@@ -140,16 +154,20 @@ class System(Named):
         )
 
     def get_station_unique_names(self, language: str) -> set[str]:
+        """Get unique station names in specified language."""
         return {x.get_caption(language) for x in self.stations.values()}
 
     def get_depth_bounds(self) -> tuple[float, float]:
+        """Get depth bounds of the system.
+
+        I.e. the minimum and maximum altitude of the stations in the system.
+        """
+
         if not len(self.stations):
             message: str = "no stations"
             raise ValueError(message)
 
-        bounds: tuple[float | None, float | None] = (
-            next(iter(self.stations.values())).altitude,
-        ) * 2
+        bounds: tuple[float, float] = (0, 0)
         for station in self.stations.values():
             height: float | None = station.altitude
             if height is None:
@@ -160,19 +178,33 @@ class System(Named):
 
 @dataclass
 class Map:
+    """Map representation of transport systems."""
+
     id_: str
     names: dict[str, str] = field(default_factory=dict)
     systems: dict[str, System] = field(default_factory=dict)
     local_languages: list[str] = field(default_factory=list)
 
     def get_system_by_id(self, system_id: str) -> System:
+        """Get system by its string identifier."""
+
         return self.systems[system_id]
 
     def set_names(self, names: dict[str, str]) -> None:
+        """Set names of the map (language to name)."""
+
         self.names = names
 
     def get_local_languages(self) -> list[str]:
+        """Get local languages of the map.
+
+        Local languages are spoken in the area where transport systems are
+        located.
+        """
+
         return self.local_languages
 
     def get_systems(self) -> Iterator[System]:
+        """Get systems of the map."""
+
         return iter(self.systems.values())

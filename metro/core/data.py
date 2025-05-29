@@ -167,6 +167,8 @@ def compute_line_id(
 
 
 class DateAccuracy(Enum):
+    """Accuracy of the date."""
+
     NONE = "none"
     YEAR = "year"
     MONTH = "month"

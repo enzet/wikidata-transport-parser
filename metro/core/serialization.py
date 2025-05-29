@@ -1,3 +1,5 @@
+"""Serialization of primitive values."""
+
 from datetime import datetime
 from enum import Enum
 from typing import Any
@@ -7,6 +9,8 @@ __email__ = "me@enzet.ru"
 
 
 def is_null(value: Any) -> bool:
+    """Check if value is null or empty, but not zero."""
+
     return value is None or value == {} or value == []
 
 

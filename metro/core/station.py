@@ -1,3 +1,5 @@
+"""Transport station."""
+
 from __future__ import annotations
 
 import logging
@@ -75,12 +77,15 @@ class Station(Named):
         return structure
 
     def short_id(self) -> str:
+        """Get short station identifier."""
         return self.id_.split("/")[1]
 
     def get_save_id(self) -> str:
+        """Get safe station identifier without slashes."""
         return self.id_.replace("/", "___")
 
     def get_caption(self, language: str) -> str:
+        """Get station caption in specified language."""
         text: str = "unknown"
         if self.id_:
             text = self.id_[self.id_.find("/") + 1 :]
@@ -92,6 +97,7 @@ class Station(Named):
     def get_connections(
         self, connection_type: ConnectionType = None
     ) -> list[Connection]:
+        """Get station connections."""
         return [
             x
             for x in self.connections
@@ -99,12 +105,14 @@ class Station(Named):
         ]
 
     def get_connection(self, other: Station) -> Connection | None:
+        """Get connection to the specified station."""
         connections: list[Connection] = [
             x for x in self.connections if x.to_ == other
         ]
         return connections[0] if connections else None
 
     def check_height_and_structure(self) -> None:
+        """Check station height and structure consistency."""
         if self.structure_type:
             self.structure_type.check_height(self.altitude, self.id_)
 
@@ -136,7 +144,7 @@ class Station(Named):
         )
 
     def is_transition(self) -> bool:
-        """If this station is as transition station."""
+        """Check if station is a transition station."""
         return any(
             x.type_ == ConnectionType.TRANSITION for x in self.connections
         )
@@ -147,7 +155,7 @@ class Station(Named):
         type_: ConnectionType,
         status: dict | None = None,
     ) -> None:
-        """Add connection from this station to another."""
+        """Add connection to another station."""
         connection: Connection
         for connection in self.connections:
             if connection.to_ == other_station:
@@ -179,7 +187,7 @@ class Station(Named):
     # Status.
 
     def is_hidden(self) -> bool:
-        """If station is not currently in operation."""
+        """Check if station is not currently in operation."""
         return self.status["type"] in [
             ObjectStatus.CLOSED,
             ObjectStatus.UNDER_CONSTRUCTION,
@@ -188,6 +196,8 @@ class Station(Named):
 
 
 class ConnectionType(Enum):
+    """Type of connection between stations."""
+
     NEXT = "next"
     TRANSITION = "transition"
     SAME = "same"
@@ -195,11 +205,14 @@ class ConnectionType(Enum):
 
 @dataclass
 class Connection:
+    """Connection between two stations."""
+
     to_: Station | None
     type_: ConnectionType
     status: dict = None
 
     def is_hidden(self) -> bool:
+        """Check if connection is hidden."""
         return self.status and self.status["type"] in [
             "closed",
             "under_construction",
@@ -210,6 +223,7 @@ class Connection:
     def deserialize(
         cls, structure: dict[str, Any], stations: dict[str, Station]
     ) -> Connection:
+        """Deserialize connection from structure."""
         return cls(
             stations[structure["to"]],
             ConnectionType(structure["type"]),
@@ -217,6 +231,7 @@ class Connection:
         )
 
     def serialize(self) -> dict[str, Any]:
+        """Serialize connection to structure."""
         return {"to": self.to_.id_, "type": self.type_.value} | (
             {"status": self.status} if self.status else {}
         )
@@ -277,10 +292,13 @@ class StationStructure(Enum):
             )
 
     def is_ground(self) -> bool:
+        """Check if station is ground type."""
         return self.name[:6] == "GROUND"
 
     def is_deep(self) -> bool:
+        """Check if station is deep type."""
         return self.name[:4] == "DEEP"
 
     def is_shallow(self) -> bool:
+        """Check if station is shallow type."""
         return self.name[:7] == "SHALLOW"

@@ -1,3 +1,5 @@
+"""Utility functions for geographical coordinates."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

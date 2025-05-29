@@ -1,0 +1,1 @@
+"""Core transport data structures."""

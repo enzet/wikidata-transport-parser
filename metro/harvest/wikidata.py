@@ -1,3 +1,5 @@
+"""Harvest data from Wikidata."""
+
 from __future__ import annotations
 
 import json
@@ -128,6 +130,8 @@ class WikidataItem:
         return self.entity["labels"][language]["value"]
 
     def has_name(self, language: str = "en") -> bool:
+        """Check if item has name in specified language."""
+
         if "labels" not in self.entity:
             return False
         if language not in self.entity["labels"]:
@@ -148,6 +152,11 @@ class WikidataItem:
 
 
 class WikidataTime:
+    """Special Wikidata time format.
+
+    See https://www.wikidata.org/wiki/Help:Dates for more details.
+    """
+
     def __init__(self, time_point: dict[str, Any]) -> None:
         time: str = time_point["time"]
         if time[6:8] == "00":
@@ -165,6 +174,8 @@ class WikidataTime:
 
 
 def get_value(claim: dict) -> Any:
+    """Get value from Wikidata claim."""
+
     return claim["mainsnak"]["datavalue"]["value"]
 
 
@@ -362,6 +373,8 @@ class WikidataStationItem(WikidataItem):
             self.line_wikidata_ids = [0]
 
     def fill_station(self, station: Station) -> None:
+        """Fill station object with data from Wikidata station item."""
+
         station.set_names(self.names)
         station.geo_position = self.geo_position
         station.open_time = self.open_time
@@ -371,10 +384,13 @@ class WikidataStationItem(WikidataItem):
         self.stations.append(station)
 
     def get_stations(self) -> list[Station]:
+        """Get stations from Wikidata station item."""
         return self.stations
 
 
 class WikidataLineItem(WikidataItem):
+    """Wikidata item that describes transport line."""
+
     def __init__(
         self,
         structure: dict[str, Any],
@@ -442,11 +458,13 @@ class WikidataLineItem(WikidataItem):
 
 
 class WikidataSystemItem(WikidataItem):
-    pass
+    """Wikidata item that describes transport system."""
 
 
 @dataclass
 class WikidataParser:
+    """Parser for Wikidata."""
+
     cache_directory: Path
 
     def parse_wikidata(self, wikidata_id: int) -> dict:
@@ -465,6 +483,8 @@ class WikidataParser:
 
 
 class WikidataCityParser:
+    """Parser for extracting city transport data from Wikidata."""
+
     def __init__(
         self,
         wikidata_parser: WikidataParser,
@@ -495,6 +515,8 @@ class WikidataCityParser:
             ]
 
     def parse(self, limit: int | None = None) -> None:
+        """Parse transport data for the city from Wikidata."""
+
         # TODO(enzet): Add filter, so we can parse only stations of one line, or
         # at least of one city.
 

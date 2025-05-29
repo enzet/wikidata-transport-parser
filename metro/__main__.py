@@ -1,3 +1,5 @@
+"""Entry point for the project."""
+
 import argparse
 import json
 import logging
@@ -12,6 +14,8 @@ __email__ = "me@enzet.ru"
 
 
 def main() -> None:
+    """Parse arguments and run the program."""
+
     logging.basicConfig(format="%(levelname)s %(message)s", level=logging.INFO)
 
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
