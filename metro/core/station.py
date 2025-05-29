@@ -271,7 +271,10 @@ class StationStructure(Enum):
             or (self.is_shallow() and height < MIN_SHALLOW_HEIGHT)
         ):
             logging.warning(
-                f"station {station_id} is {self.name} but height is {height}"
+                "station %s is %s but height is %s",
+                station_id,
+                self.name,
+                height,
             )
 
     def is_ground(self) -> bool:

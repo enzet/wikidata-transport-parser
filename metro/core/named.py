@@ -23,7 +23,7 @@ class Named:
             and self.names[language] != name
         ):
             logging.warning(
-                "rewrite name: " + self.names[language] + " -> " + name
+                "rewrite name: %s -> %s", self.names[language], name
             )
         self.names[language] = name
 

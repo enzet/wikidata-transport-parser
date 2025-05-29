@@ -156,7 +156,9 @@ class WikidataTime:
             time = time[:6] + "01" + time[8:]
         if time[9:11] == "00":
             time = time[:9] + "01" + time[11:]
-        self.time: datetime = datetime.strptime(time, "+" + WIKIDATA_TIME_FORMAT)
+        self.time: datetime = datetime.strptime(
+            time, "+" + WIKIDATA_TIME_FORMAT
+        )
 
         self.timezone: str = time_point["timezone"]
         self.precision: int = time_point["precision"]
@@ -248,8 +250,8 @@ class WikidataStationItem(WikidataItem):
                 ]["mainsnak"]
             ):
                 logging.warning(
-                    "[WIKIDATA] no value for date of official opening for "
-                    + name
+                    "[WIKIDATA] no value for date of official opening for %s",
+                    name,
                 )
             else:
                 point = get_value(
@@ -261,7 +263,7 @@ class WikidataStationItem(WikidataItem):
                     if wikidata_time.time > datetime.now():
                         self.status = {"type": ObjectStatus.UNDER_CONSTRUCTION}
                 except ValueError:
-                    logging.warning("Invalid date: " + str(point))
+                    logging.warning("Invalid date: %s", point)
 
         self.geo_position: tuple[float, float] | None = None
         self.altitude: float | None = None
@@ -282,7 +284,9 @@ class WikidataStationItem(WikidataItem):
         if WIKIDATA_PROPERTY_LINE in self.claims:
             for claim in self.claims[WIKIDATA_PROPERTY_LINE]:
                 if "datavalue" not in claim["mainsnak"]:
-                    logging.warning("[WIKIDATA] no value for line for " + name)
+                    logging.warning(
+                        "[WIKIDATA] no value for line for %s", name
+                    )
                     continue
                 if "qualifiers" in claim:
                     qualifiers = claim["qualifiers"]
@@ -297,7 +301,7 @@ class WikidataStationItem(WikidataItem):
             for claim in self.claims[WIKIDATA_PROPERTY_NEXT_STATION]:
                 if "datavalue" not in claim["mainsnak"]:
                     logging.warning(
-                        "[WIKIDATA] no value for next station for " + name
+                        "[WIKIDATA] no value for next station for %s", name
                     )
                     continue
                 specified_line_wikidata_id: int | None = None
@@ -328,7 +332,7 @@ class WikidataStationItem(WikidataItem):
             for claim in self.claims[WIKIDATA_PROPERTY_TRANSITION_STATION]:
                 if "datavalue" not in claim["mainsnak"]:
                     logging.warning(
-                        f"[WIKIDATA] no value for next station for {name}"
+                        "[WIKIDATA] no value for next station for %s", name
                     )
                     continue
                 transition_station_wikidata_id: int = get_value(claim)[
@@ -351,7 +355,7 @@ class WikidataStationItem(WikidataItem):
                     self.height = -float(get_value(claim)["amount"])
                 else:
                     logging.warning(
-                        f"unsupported unit {get_value(claim)['unit']}"
+                        "unsupported unit %s", get_value(claim)["unit"]
                     )
 
         self.stations: list[Station] = []
@@ -501,9 +505,7 @@ class WikidataCityParser:
         structure: dict
 
         if self.wikidata_id:
-            structure = self.wikidata_parser.parse_wikidata(
-                self.wikidata_id
-            )
+            structure = self.wikidata_parser.parse_wikidata(self.wikidata_id)
             item: WikidataSystemItem = WikidataSystemItem(
                 structure, self.wikidata_id
             )
@@ -527,9 +529,7 @@ class WikidataCityParser:
             for pattern in self.network_update:
                 en_name = station_item.get_name("en")
                 if en_name and re.match(".*" + pattern + ".*", en_name):
-                    structure = self.wikidata_parser.parse_wikidata(
-                        wikidata_id
-                    )
+                    structure = self.wikidata_parser.parse_wikidata(wikidata_id)
                     station_item = WikidataStationItem(structure, wikidata_id)
 
             self.parsed_station_wikidata_ids.add(wikidata_id)
@@ -633,9 +633,7 @@ class WikidataCityParser:
 
         station_wikidata_id: int
         for station_wikidata_id in station_items:
-            station_item = station_items[
-                station_wikidata_id
-            ]
+            station_item = station_items[station_wikidata_id]
 
             item_stations: list[Station] = []
 
@@ -675,9 +673,7 @@ class WikidataCityParser:
             stations[station_wikidata_id] = item_stations
 
         for station_wikidata_id in station_items:
-            station_item = station_items[
-                station_wikidata_id
-            ]
+            station_item = station_items[station_wikidata_id]
 
             for (
                 other_station_wikidata_id,
@@ -707,9 +703,7 @@ class WikidataCityParser:
             ) in station_item.transition_connections:
                 if other_station_wikidata_id not in station_items:
                     continue
-                other_station_item = station_items[
-                    other_station_wikidata_id
-                ]
+                other_station_item = station_items[other_station_wikidata_id]
                 for station in station_item.stations:
                     for other_station in other_station_item.stations:
                         station.add_connection(

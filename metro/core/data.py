@@ -6,10 +6,10 @@ any kind of names, captions, etc.
 
 from __future__ import annotations
 
-from enum import Enum
 import logging
 import re
 from datetime import date
+from enum import Enum
 from typing import Any
 
 __author__ = "Sergey Vartanov"

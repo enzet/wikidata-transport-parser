@@ -42,7 +42,8 @@ class Position:
     def to_structure(self) -> dict[str, float | None]:
         """Serialize to structure."""
         structure: dict[str, float | None] = {
-            "longitude": self.longitude, "latitude": self.latitude
+            "longitude": self.longitude,
+            "latitude": self.latitude,
         }
         if self.altitude is not None:
             structure["altitude"] = self.altitude

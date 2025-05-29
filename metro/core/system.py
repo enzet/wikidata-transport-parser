@@ -72,7 +72,7 @@ class System(Named):
                 self.set_names(value)
 
             elif key not in ["lines", "stations"]:
-                logging.warning("ignored key " + key + " for system")
+                logging.warning("ignored key %s for system", key)
 
     def serialize(self) -> dict[str, Any]:
         """Serialize transport system to structure."""
