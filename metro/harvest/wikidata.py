@@ -671,10 +671,7 @@ class WikidataCityParser:
         for station_wikidata_id in station_items:
             station_item = station_items[station_wikidata_id]
 
-            for (
-                other_station_wikidata_id,
-                line_wikidata_id,
-            ) in station_item.next_connections:
+            for other_station_wikidata_id, _ in station_item.next_connections:
                 if other_station_wikidata_id not in station_items:
                     continue
                 other_station_item: WikidataStationItem = station_items[
