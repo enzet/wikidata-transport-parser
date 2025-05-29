@@ -22,6 +22,8 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
+JSONSerializable = str | int | float | list | dict | None
+
 WIKIDATA_ITEM_PREFIX = "Q"
 
 WIKIDATA_PROPERTY_ROUTE_MAP = "P15"
@@ -173,7 +175,7 @@ class WikidataTime:
         self.after: bool = time_point["after"]
 
 
-def get_value(claim: dict) -> Any:
+def get_value(claim: dict) -> JSONSerializable:
     """Get value from Wikidata claim."""
 
     return claim["mainsnak"]["datavalue"]["value"]

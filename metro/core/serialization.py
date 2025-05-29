@@ -2,19 +2,22 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
+Serializable = (
+    str | int | float | list | tuple | dict | datetime | Enum | object
+)
 
-def is_null(value: Any) -> bool:
+
+def is_null(value: Serializable) -> bool:
     """Check if value is null or empty, but not zero."""
 
     return value is None or value == {} or value == []
 
 
-def serialize(value: Any) -> Any:
+def serialize(value: Serializable) -> Serializable:
     """Serialize primitive value."""
     for type_ in str, int, float:
         if isinstance(value, type_):
@@ -32,7 +35,7 @@ def serialize(value: Any) -> Any:
     return value.serialize()
 
 
-def deserialize(value: Any) -> Any:
+def deserialize(value: Serializable) -> Serializable:
     """Deserialize primitive value."""
     for type_ in str, int, float:
         if isinstance(value, type_):
