@@ -15,7 +15,7 @@ class Named:
     """Proper names in different languages."""
 
     def set_name(
-        self, language: str, name: str, ignore_rewrite: bool = True
+        self, language: str, name: str, *, ignore_rewrite: bool = True
     ) -> None:
         if (
             language in self.names
@@ -28,10 +28,12 @@ class Named:
         self.names[language] = name
 
     def set_names(
-        self, names: dict[str, str], ignore_rewrite: bool = True
+        self, names: dict[str, str], *, ignore_rewrite: bool = True
     ) -> None:
         [
-            self.set_name(language, names[language], ignore_rewrite)
+            self.set_name(
+                language, names[language], ignore_rewrite=ignore_rewrite
+            )
             for language in names
         ]
 

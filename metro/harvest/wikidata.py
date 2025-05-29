@@ -282,9 +282,7 @@ class WikidataStationItem(WikidataItem):
         if WIKIDATA_PROPERTY_LINE in self.claims:
             for claim in self.claims[WIKIDATA_PROPERTY_LINE]:
                 if "datavalue" not in claim["mainsnak"]:
-                    logging.warning(
-                        "[WIKIDATA] no value for line for %s", name
-                    )
+                    logging.warning("[WIKIDATA] no value for line for %s", name)
                     continue
                 if "qualifiers" in claim:
                     qualifiers = claim["qualifiers"]
