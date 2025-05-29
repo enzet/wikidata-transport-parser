@@ -218,14 +218,14 @@ def get_date_representation(
         if language == "en":
             return d.strftime("%B %Y")
         return translator[d.strftime("%B").lower()][
-            language + "-rod"
+            language + "-gen"
         ] + d.strftime(" %Y")
     if accuracy == DateAccuracy.DAY:
         if language == "en":
             return str(d.day) + d.strftime(" %B %Y")
         return (
             str(d.day)
-            + translator[d.strftime("%B").lower()][language + "-rod"]
+            + translator[d.strftime("%B").lower()][language + "-gen"]
             + d.strftime(" %Y")
         )
     return None
